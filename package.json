@@ -1,0 +1,1 @@
+{"name":"growthhub","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","dev":"node scripts/dev.mjs","test":"node --test tests/*.test.mjs","check:release":"node scripts/verify-release.mjs","check:recovery":"node scripts/verify-recovery.mjs","db:generate":"drizzle-kit generate"},"devDependencies":{"drizzle-kit":"^0.31.0","drizzle-orm":"^0.44.0"}}
