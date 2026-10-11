@@ -20,7 +20,6 @@ async function provider(env,path,body,access,method=body?'POST':'GET'){
  if(!response.ok){const message=response.status===429?'尝试次数过多，请稍后再试':data.error_code==='email_not_confirmed'?'请先验证邮箱，再登录':data.error_code==='weak_password'?'密码强度不足，请使用更长的不同字符组合':data.error_code==='same_password'?'新密码不能与原密码相同':response.status>=500?'登录服务暂时不可用，请稍后重试':'邮箱、密码或验证信息无效，请检查后重试';authError(response.status>=500?503:response.status===429?429:400,message)}
  return data;
 }
-function platformUser(request){const id=request.headers.get('oai-authenticated-user-id');if(!id)return null;let name=request.headers.get('oai-authenticated-user-full-name')||'';try{if(request.headers.get('oai-authenticated-user-full-name-encoding')==='percent-encoded-utf-8')name=decodeURIComponent(name)}catch{}const email=(request.headers.get('oai-authenticated-user-email')||'').toLowerCase();return {id,email,name:(name||email.split('@')[0]||'增长实践者').slice(0,50),provider:'chatgpt'}}
 export async function resolveIdentity(request,env){
  const cookies=cookieJar(request),access=cookies['__Host-gh-access'],refresh=cookies['__Host-gh-refresh'];
  if(authReady(env)&&(access||refresh)){
@@ -30,7 +29,7 @@ export async function resolveIdentity(request,env){
   if(verified?.id&&verified.email_confirmed_at&&typeof verified.email==='string')return {user:{id:'sb:'+verified.id,email:verified.email.toLowerCase(),name:String(verified.user_metadata?.full_name||verified.email.split('@')[0]).slice(0,50),provider:'supabase'},cookies:tokens?tokenCookies(tokens):[]};
   return {user:null,cookies:clearTokens()};
  }
- return {user:platformUser(request),cookies:[]};
+ return {user:null,cookies:[]};
 }
 export async function authAPI(request,env){
  const url=new URL(request.url),action=url.pathname.split('/')[3],jar=cookieJar(request);
@@ -40,7 +39,7 @@ export async function authAPI(request,env){
   try{const tokens=await provider(env,'token?grant_type=pkce',{auth_code:url.searchParams.get('code'),code_verifier:saved.verifier});return authRedirect('/'+(saved.mode==='recovery'?'#reset-password':allowedNext(saved.next)),[...tokenCookies(tokens),authCookie('__Host-gh-pkce','',0)])}catch{return authRedirect('/#login?error=callback',[authCookie('__Host-gh-pkce','',0)])}
  }
  if(action==='oauth'&&request.method==='GET'){
-  const p=url.searchParams.get('provider');if(!['google','apple'].includes(p)||(env.AUTH_PROVIDERS||'').split(',').indexOf(p)<0)authError(503,'此登录方式尚未开通');if(!authReady(env))authError(503,'登录服务尚未开通');
+  const p=url.searchParams.get('provider');if(!['google'].includes(p)||(env.AUTH_PROVIDERS||'').split(',').indexOf(p)<0)authError(503,'此登录方式尚未开通');if(!authReady(env))authError(503,'登录服务尚未开通');
   const verifier=base64URL(crypto.getRandomValues(new Uint8Array(48))),challenge=base64URL(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier)));
   const target=new URL('/auth/v1/authorize',env.SUPABASE_URL);target.search=new URLSearchParams({provider:p,redirect_to:url.origin+'/api/auth/callback',code_challenge:challenge,code_challenge_method:'s256'}).toString();
   return authRedirect(target.href,[authCookie('__Host-gh-pkce',JSON.stringify({verifier,next:allowedNext(url.searchParams.get('next'))}),3600)]);
@@ -85,4 +84,4 @@ export async function authAPI(request,env){
  if(t.access_token)return withCookies(authJSON({ok:true}),tokenCookies(t));
  return withCookies(authJSON({sent:true}),[pkce]);
 }
-export function authConfiguration(env){return {ready:authReady(env),providers:authReady(env)?(env.AUTH_PROVIDERS||'').split(',').filter(p=>['google','apple'].includes(p)):[]}}
+export function authConfiguration(env){return {ready:authReady(env),providers:authReady(env)?(env.AUTH_PROVIDERS||'').split(',').filter(p=>['google'].includes(p)):[]}}

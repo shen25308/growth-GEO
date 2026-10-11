@@ -1,3 +1,4 @@
+import {fixtureAuth,fixtureCookie} from './auth-fixture.mjs';
 // Local-only rehearsal. Never opens, exports, or overwrites production data.
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -13,7 +14,7 @@ let source,restored;
 try{
  const f=await fixture(path.join(directory,'source.sqlite'));source=f.sqlite;
  const call=async(route,method,body,user='author')=>{
-  const response=await api(new Request('https://fixture.test/api/'+route,{method,headers:{'content-type':'application/json',origin:'https://fixture.test','oai-authenticated-user-id':user,'oai-authenticated-user-email':user+'@example.test'},...(body?{body:JSON.stringify(body)}:{})}),{DB:f.DB});
+  const response=await api(new Request('https://fixture.test/api/'+route,{method,headers:{'content-type':'application/json',origin:'https://fixture.test',cookie:fixtureCookie(user)},...(body?{body:JSON.stringify(body)}:{})}),{DB:f.DB,...fixtureAuth});
   assert.ok(response.ok,'Fixture creation failed: '+route);return response.json();
  };
  await call('profile','PUT',{name:'Recovery Fixture',accepted:true});
@@ -36,7 +37,7 @@ try{
  assert.equal(restored.prepare('PRAGMA integrity_check').get().integrity_check,'ok');
  assert.deepEqual(snapshot(restored),original);
  assert.equal(restored.prepare('SELECT COUNT(*) AS n FROM revisions WHERE resource_id=?').get(resource.id).n,2);
- assert.equal(restored.prepare('SELECT COUNT(*) AS n FROM drafts WHERE user_id=?').get('reader').n,0);
+ assert.equal(restored.prepare('SELECT COUNT(*) AS n FROM drafts WHERE user_id=?').get('sb:reader').n,0);
  assert.equal(restored.prepare("SELECT COUNT(*) AS n FROM practices WHERE visibility='community'").get().n,0);
  console.log(JSON.stringify({result:'passed',scope:'synthetic local SQLite fixture only',tables:tables.length,checks:['checksum','integrity','all-table roundtrip','versions','draft ownership','practice privacy'],productionBackup:'not performed',productionRestore:'not performed'}));
 }finally{restored?.close();source?.close();await fs.rm(directory,{recursive:true,force:true})}

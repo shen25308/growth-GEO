@@ -14,3 +14,9 @@ dist/
 *.pem
 *.p8
 *.key
+
+.wrangler/
+.dev.vars
+.dev.vars.*
+backups/
+wrangler.deploy.json

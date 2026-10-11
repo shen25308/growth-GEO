@@ -1,1 +1,21 @@
-{"name":"growthhub","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","dev":"node scripts/dev.mjs","test":"node --test tests/*.test.mjs","check:release":"node scripts/verify-release.mjs","check:recovery":"node scripts/verify-recovery.mjs","db:generate":"drizzle-kit generate"},"devDependencies":{"drizzle-kit":"^0.31.0","drizzle-orm":"^0.44.0"}}
+{
+  "name": "growthhub",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check:release": "node scripts/verify-release.mjs",
+    "check:recovery": "node scripts/verify-recovery.mjs",
+    "db:generate": "drizzle-kit generate",
+    "dev:cloudflare": "wrangler dev --local --port 8788 --var PUBLIC_ORIGIN:http://127.0.0.1:8788 --var MAINTENANCE:false",
+    "check:cloudflare": "node scripts/check-deploy.mjs && wrangler deploy --dry-run --outdir dist/cloudflare",
+    "deploy": "node scripts/check-deploy.mjs && wrangler deploy"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.0",
+    "drizzle-orm": "^0.44.0",
+    "wrangler": "^4.149.0"
+  }
+}

@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const config=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
+assert.equal(config.account_id,'a882aa8318c5c4e6265d0511fe34679a','Deployment must target Natively Labs, Inc.');
+assert.equal(config.name,'growthhub');
+assert.equal(config.main,'worker/index.js');
+assert.equal(config.vars.PUBLIC_ORIGIN,'https://growthhub.dev');
+assert.equal(config.vars.INVITE_ONLY,'true');
+assert.equal(config.vars.AUTH_PROVIDERS,'google');
+assert.equal(config.workers_dev,false);
+assert.equal(config.preview_urls,false);
+assert.deepEqual(config.routes,[{pattern:'growthhub.dev',custom_domain:true}]);
+assert.deepEqual(config.assets.run_worker_first,['/api/*']);
+assert.equal(config.d1_databases.length,1);
+assert.equal(config.d1_databases[0].binding,'DB');
+assert.equal(config.d1_databases[0].database_id,'294e8d50-fb49-4696-83a4-95012e624bd9');
+assert.equal(config.d1_databases[0].database_name,'growthhub-production');
+console.log('Deployment target checked: company account / GrowthHub only.');

@@ -1,12 +1,10 @@
-import {seeds,getReadme} from '../public/data.js';
 import {resolveIdentity,authAPI,authConfiguration} from './auth.js';
-const seedRows=seeds.map((r,i)=>({...r,readme:getReadme(r),stars:0,forks:0,growth:0,sample:true,version:1,updatedAt:Date.UTC(2026,9,7)-i*86400000,ownerId:'sample',difficulty:r.type==='tool'?'technical':'beginner',audience:'市场运营、内容与增长从业者'}));
 const json=(data,status=200)=>Response.json(data,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status})};
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const rows=async stmt=>(await stmt.all()).results;
 const decode=r=>r?{...JSON.parse(r.data),id:r.id,ownerId:r.owner_id,owner:r.owner_name,version:r.version,updatedAt:r.updated_at,forkedFrom:r.forked_from,sample:false,status:r.status||'published'}:null;
-const fetchResource=async(db,id)=>decode(await q(db,'SELECT r.*, COALESCE(p.name,r.owner_name) AS owner_name FROM resources r LEFT JOIN profiles p ON p.id=r.owner_id WHERE r.id = ?',id).first())||seedRows.find(r=>r.id===id);
+const fetchResource=async(db,id)=>decode(await q(db,'SELECT r.*, COALESCE(p.name,r.owner_name) AS owner_name FROM resources r LEFT JOIN profiles p ON p.id=r.owner_id WHERE r.id = ?',id).first());
 function trim(v,max,label,required=true){if(typeof v!=='string'||v.length>max||required&&!v.trim())fail(400,`${label}不完整或超出长度限制`);return v.trim()}
 function resourceInput(b){const d={title:trim(b.title,80,'资源标题'),desc:trim(b.desc,300,'简单介绍'),readme:trim(b.readme,150000,'使用指南'),type:b.type,topic:trim(b.topic,30,'所属话题'),audience:trim(b.audience||'',100,'适用人群',false),difficulty:b.difficulty||'beginner',url:trim(b.url||'',2000,'项目链接',false)};if(!['skill','experience','tool'].includes(d.type)||!['beginner','manual','technical'].includes(d.difficulty))fail(400,'资源类型或使用门槛无效');if(d.url){try{const u=new URL(d.url);if(!['https:','http:'].includes(u.protocol)||u.username||u.password)throw Error()}catch{fail(400,'项目链接必须是完整的 http 或 https 地址')}}if(!d.readme.replace(/\[[^\]]*\]\(https?:\/\/[^)]+\)/g,'').replace(/https?:\/\/\S+/g,'').replace(/[#>*\-`\s]/g,''))fail(400,'请在站内写清执行步骤，不能只提交外链');const disclosure=b.disclosure||'unspecified';if(!['unspecified','independent','creator','sponsored'].includes(disclosure))fail(400,'利益关系说明无效');const evidenceStatus=b.evidenceStatus||'untested';if(!['untested','improved','no-improvement','mixed'].includes(evidenceStatus))fail(400,'实践状态无效');const evidence=trim(b.evidence||'',1500,'结果说明',false),limits=trim(b.limits||'',1000,'适用边界',false),effort=trim(b.effort||'',100,'投入时间与成本',false);if(evidenceStatus!=='untested'&&!evidence)fail(400,'请补充结果说明，未实践的方法请选择待验证');return {...d,disclosure,evidenceStatus,evidence,limits,effort,tags:[d.topic],name:trim(b.name||d.title,80,'资源名称')};}
 export async function api(request,env){let identity={cookies:[]};try{
@@ -37,7 +35,7 @@ async function handleAPI(request,env,user){
   const practiceCounts=await rows(q(db,"SELECT resource_id,COUNT(*) AS total FROM practices WHERE visibility='community' AND stage='complete' GROUP BY resource_id"));
   const ownStars=(await rows(q(db,'SELECT resource_id FROM stars WHERE user_id = ?',user?.member?user.id:''))).map(s=>s.resource_id);
   const forkCounts=await rows(q(db,"SELECT forked_from, COUNT(*) AS total FROM resources WHERE forked_from IS NOT NULL AND status='published' GROUP BY forked_from"));
-  return json({user,auth:authConfiguration(env),resources:[...seedRows,...resources].map(({readme,...r})=>({...r,practiceCount:practiceCounts.find(c=>c.resource_id===r.id)?.total||0,stars:counts.find(c=>c.resource_id===r.id)?.total||0,forks:forkCounts.find(c=>c.forked_from===r.id)?.total||0})),stars:ownStars,practices:ownPractices.map(p=>({...p,data:JSON.parse(p.data)}))});
+  return json({user,auth:authConfiguration(env),resources:resources.map(({readme,...r})=>({...r,practiceCount:practiceCounts.find(c=>c.resource_id===r.id)?.total||0,stars:counts.find(c=>c.resource_id===r.id)?.total||0,forks:forkCounts.find(c=>c.forked_from===r.id)?.total||0})),stars:ownStars,practices:ownPractices.map(p=>({...p,data:JSON.parse(p.data)}))});
  }
  if(parts[1]==='profile'&&method==='PUT'){if(!profile?.accepted_at&&b.accepted!==true)fail(400,'请同意社区约定和隐私说明');const name=trim(b.name,50,'显示名称'),bio=trim(b.bio||'',200,'个人介绍',false);await q(db,'INSERT INTO profiles(id,name,bio,accepted_at) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,bio=excluded.bio,accepted_at=COALESCE(profiles.accepted_at,excluded.accepted_at)',user.id,name,bio,Date.now()).run();return json({name,bio})}
  if(parts[1]==='drafts'){
@@ -64,7 +62,6 @@ async function handleAPI(request,env,user){
   if(parts[2]==='invitations'&&method==='PUT'){const email=trim(b.email,254,'邮箱').toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||typeof b.active!=='boolean')fail(400,'邮箱或邀请状态无效');await db.batch([q(db,'INSERT INTO invitations(email,created_by,created_at,active) VALUES (?,?,?,?) ON CONFLICT(email) DO UPDATE SET active=excluded.active',email,user.id,Date.now(),Number(b.active)),log(b.active?'invite':'revoke-invite',email,'')]);return json({ok:true})}
   if(parts[2]==='moderation'&&method==='PUT'){
    if(!['hide','restore','dismiss'].includes(b.action))fail(400,'审核操作无效');const note=trim(b.note,1000,'处理说明'),resource=await fetchResource(db,String(b.resourceId));if(!resource)fail(404,'资源不存在');
-   if(b.action!=='dismiss'&&resource.sample)fail(400,'示例内容请通过站点维护更新');
    const statements=[log(b.action,resource.id,note)];
    if(b.action!=='dismiss')statements.push(q(db,'UPDATE resources SET status=? WHERE id=?',b.action==='hide'?'hidden':'archived',resource.id));
    if(b.flagId){const flag=await q(db,'SELECT * FROM flags WHERE id=? AND resource_id=? AND status=?',b.flagId,resource.id,'open').first();if(!flag)fail(409,'这条举报已处理，请刷新');statements.push(q(db,"UPDATE flags SET status='resolved',resolution=?,resolved_at=? WHERE id=?",note,Date.now(),flag.id));const n=notify(flag.reporter_id,resource.id,'你的举报已处理：'+note);if(n)statements.push(n)}
