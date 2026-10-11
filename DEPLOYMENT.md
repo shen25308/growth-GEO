@@ -4,9 +4,11 @@
 
 目标域名 `https://growthhub.dev`，公司 Cloudflare 账号 Natively Labs, Inc.。网站程序使用 Workers Static Assets + Worker，社区数据使用独立 D1，邮箱及 Google 登录继续使用原 Supabase 项目。
 
-截至 2026-10-12：Wrangler 公司授权已验证，凭据加密并使用 macOS 钥匙串；`growthhub-production` 已创建并完成四个数据库迁移；独立入口和本地检查通过。已导入 14 张业务表并将远端导出恢复至隔离数据库，逐行核对一致；Worker 和登录配置已发布，维护开关仍开启。`growthhub.dev` 已绑定独立 Worker，但 Cloudflare 域名状态仍为 Pending，注册商的 nameserver 尚未切换。旧站写入冻结、增量复核、域名切换和真实登录验收仍需完成。不要把此记录理解为已经切换上线。
+截至 2026-10-12：Wrangler 公司授权已验证，凭据加密并使用 macOS 钥匙串；`growthhub-production` 已创建并完成四个数据库迁移；独立入口和本地检查通过。已导入 14 张业务表并将远端导出恢复至隔离数据库，逐行核对一致；Worker 和登录配置已发布，维护开关仍开启。`growthhub.dev` 已绑定独立 Worker，但 Cloudflare 域名状态仍为 Pending，注册商的 nameserver 尚未切换。旧站已临时冻结登录和写入，冻结后 14 张表记录与原快照一致；重新下载的完整资源及修订记录也与迁移前导出一致。域名切换和真实登录验收仍需完成。不要把此记录理解为已经切换上线。
 
 当前 Worker 版本：`bfe6161d-8789-40a4-b5e8-7fcf2a8a1992`。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
+
+旧站冻结版本为 Sites v17，提交 `f810415b33dcabde717777ca44c20f75ea39136a`，环境修订 4（`MIGRATION_READ_ONLY=true`），2026-10-12 00:27（Asia/Shanghai）部署成功。公开读取及已有会话的数据导出仍可用；新增写入和认证请求返回迁移提示。冻结核对报告在 `outputs/growthhub-migration/`。如取消切换，可将该开关改回 `false` 并重新部署同一旧站版本；若新库已接收写入，必须先核对增量。
 
 ## 域名切换记录
 
@@ -14,6 +16,9 @@
 - 公司 Cloudflare 分配的 nameserver：`leland.ns.cloudflare.com`、`mary.ns.cloudflare.com`。
 - 经用户确认，已删除公司 Cloudflare 新区域导入的两条旧 apex A：`172.66.3.26`、`162.159.143.30`；随后成功创建 `growthhub.dev → growthhub` Worker 绑定。此次没有修改 Dynadot 现有解析。
 - 旧 `_cf-custom-hostname` TXT 暂时保留，待迁移验收后清理。切换前仍须登录注册商核对完整 DNS 和 DNSSEC 状态，避免遗漏邮箱或其他子域名。
+
+- 已核对 Dynadot：仅两条旧 A、`_cf-custom-hostname` TXT 和 `_openai-site-verification` TXT，无邮箱及其他子域名业务。原值已单独备份。两个新 nameserver 已填入注册商表单，尚未提交，等待用户确认。
+- 原 Sites 自定义域名绑定仍然存在，记录 ID 为 `appgdom_6acb3c91cce88191beada51a6b4e7b38`。新区域与证书准备就绪后，应移除旧绑定并验证流量确实进入独立 Worker。
 
 ## 配置
 
