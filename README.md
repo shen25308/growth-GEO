@@ -10,7 +10,7 @@
 
 这条分支将已发布的 v16 迁移至 Natively Labs, Inc. 的 Cloudflare Workers + D1。Supabase 继续提供邮箱与 Google 登录。网站运行不依赖 ChatGPT Sites 的身份请求头、托管绑定或代理服务器；GitHub 保存源码，Cloudflare 承载程序与社区数据库。
 
-迁移尚未完成域名切换与生产验收。上传源码、创建数据库或通过本地测试都不代表完成上线，实际进度见部署文档。
+域名已切换到公司 Cloudflare，旧 Sites 域名绑定已解除，用户已确认电脑可访问。新环境的真实登录、手机及完整业务验收仍待完成；实际验证范围见部署文档。
 
 ## 当前功能
 

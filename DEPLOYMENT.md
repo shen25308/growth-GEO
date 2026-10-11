@@ -4,21 +4,22 @@
 
 目标域名 `https://growthhub.dev`，公司 Cloudflare 账号 Natively Labs, Inc.。网站程序使用 Workers Static Assets + Worker，社区数据使用独立 D1，邮箱及 Google 登录继续使用原 Supabase 项目。
 
-截至 2026-10-12：Wrangler 公司授权已验证，凭据加密并使用 macOS 钥匙串；`growthhub-production` 已创建并完成四个数据库迁移；独立入口和本地检查通过。已导入 14 张业务表并将远端导出恢复至隔离数据库，逐行核对一致；Worker 和登录配置已发布，维护开关仍开启。`growthhub.dev` 已绑定独立 Worker，但 Cloudflare 域名状态仍为 Pending，注册商的 nameserver 尚未切换。旧站已临时冻结登录和写入，冻结后 14 张表记录与原快照一致；重新下载的完整资源及修订记录也与迁移前导出一致。域名切换和真实登录验收仍需完成。不要把此记录理解为已经切换上线。
+截至 2026-10-12：独立站已部署至公司 Cloudflare，14 张业务表迁移及远端恢复核对完成。Dynadot 名称服务器已保存为公司 Cloudflare 分配的地址，注册局 RDAP 已确认；旧 Sites 自定义域名绑定已移除并通过列表为空核实。独立 Worker 已关闭维护模式。用户确认电脑端可打开；已在 Safari 看见正式域名下的真实资源列表。
 
-当前 Worker 版本：`bfe6161d-8789-40a4-b5e8-7fcf2a8a1992`。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
+当前 Worker 版本：`a9683096-7051-4f06-a103-f1b7eec2c4d8`。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
+
+新权威解析地址的 HTTPS 检查通过：首页、初始化接口、真实资源详情均返回 200；Skill 下载包 47,390 字节，与仓库文件 SHA-256 一致；未登录账户导出返回 401，源码及环境文件路径返回 404。Google 入口返回 303 至原 Supabase 授权地址，回跳为 `https://growthhub.dev/api/auth/callback`，PKCE cookie 为 Secure / HttpOnly / SameSite=Lax。以上仅证明入口及配置正确，迁移后的真实 Google 授权回跳、邮箱流程、私有写入及手机验收仍待完成。使用电脑现有代理正常访问正式域名的初始化接口也返回 200。直连命令行递归 DNS 仍缓存旧 A 记录；定点检查使用新权威记录且正常验证 TLS，没有关闭证书校验。
 
 旧站冻结版本为 Sites v17，提交 `f810415b33dcabde717777ca44c20f75ea39136a`，环境修订 4（`MIGRATION_READ_ONLY=true`），2026-10-12 00:27（Asia/Shanghai）部署成功。公开读取及已有会话的数据导出仍可用；新增写入和认证请求返回迁移提示。冻结核对报告在 `outputs/growthhub-migration/`。如取消切换，可将该开关改回 `false` 并重新部署同一旧站版本；若新库已接收写入，必须先核对增量。
 
 ## 域名切换记录
 
-- 注册商现有 nameserver：`ns1.dyna-ns.net`、`ns2.dyna-ns.net`，尚未修改。
-- 公司 Cloudflare 分配的 nameserver：`leland.ns.cloudflare.com`、`mary.ns.cloudflare.com`。
-- 经用户确认，已删除公司 Cloudflare 新区域导入的两条旧 apex A：`172.66.3.26`、`162.159.143.30`；随后成功创建 `growthhub.dev → growthhub` Worker 绑定。此次没有修改 Dynadot 现有解析。
-- 旧 `_cf-custom-hostname` TXT 暂时保留，待迁移验收后清理。切换前仍须登录注册商核对完整 DNS 和 DNSSEC 状态，避免遗漏邮箱或其他子域名。
-
-- 已核对 Dynadot：仅两条旧 A、`_cf-custom-hostname` TXT 和 `_openai-site-verification` TXT，无邮箱及其他子域名业务。原值已单独备份。两个新 nameserver 已填入注册商表单，尚未提交，等待用户确认。
-- 原 Sites 自定义域名绑定仍然存在，记录 ID 为 `appgdom_6acb3c91cce88191beada51a6b4e7b38`。新区域与证书准备就绪后，应移除旧绑定并验证流量确实进入独立 Worker。
+- 原名称服务器：`ns1.dyna-ns.net`、`ns2.dyna-ns.net`；已备份原完整 DNS。
+- 现名称服务器：`leland.ns.cloudflare.com`、`mary.ns.cloudflare.com`。用户明确确认后保存；注册局记录的变更时间为 2026-10-12 00:32:30（Asia/Shanghai）。
+- 公司区域已移除导入的旧 A `172.66.3.26`、`162.159.143.30`；现由 `growthhub.dev → growthhub` Worker 绑定生成解析。核验时权威 A 为 `104.21.57.22`、`172.67.140.157`，不要将这些动态地址硬编码为部署配置。
+- 原 Sites 自定义域名 `appgdom_6acb3c91cce88191beada51a6b4e7b38` 已移除；旧网站及数据库保留用于恢复，但禁止写入。
+- 原 Dynadot 无邮箱、其他子域名或 DNSSEC 配置。旧 `_cf-custom-hostname` TXT 暂留待清理，不再存在对应 Sites 域名绑定。
+- 本轮没有变更网站域名或 Supabase 项目，所以 Google / Supabase 登录回跳地址保持不变。真实手机登录验收已交给用户，不能以配置检查代替登录成功。
 
 ## 配置
 
@@ -29,7 +30,7 @@
 | `PUBLIC_ORIGIN` | Wrangler vars | 固定 `https://growthhub.dev`，拒绝其他主机名的认证请求 |
 | `INVITE_ONLY` | Wrangler vars | `true`，保持邀请试用 |
 | `AUTH_PROVIDERS` | Wrangler vars | `google` |
-| `MAINTENANCE` | Wrangler vars | 切换验收前保持 `true`，接口返回 503 |
+| `MAINTENANCE` | Wrangler vars | 当前 `false`；设为 `true` 并部署可暂停 API |
 | `SUPABASE_URL` | Worker secret | 原有 Supabase 项目 HTTPS 地址 |
 | `SUPABASE_PUBLISHABLE_KEY` | Worker secret | 对应项目 publishable key，不能用 service-role key |
 | `ADMIN_EMAILS` | Worker secret | 公司指定管理员的已验证邮箱 |

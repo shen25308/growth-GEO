@@ -17,7 +17,7 @@
     "PUBLIC_ORIGIN": "https://growthhub.dev",
     "INVITE_ONLY": "true",
     "AUTH_PROVIDERS": "google",
-    "MAINTENANCE": "true"
+    "MAINTENANCE": "false"
   },
   "d1_databases": [{
     "binding": "DB",
