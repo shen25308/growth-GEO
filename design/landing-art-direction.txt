@@ -1,57 +1,41 @@
-GrowthHub homepage and authentication revision | 2026-10-12
+GrowthHub public entry and authentication | 2026-10-12
 
-Current direction confirmed by the user:
-The homepage has the role of GitHub's public homepage, with GrowthHub's own style.
-It introduces the community and offers entry to discovery, signup and login.
-Specific member posts belong in discovery, not on the public brand homepage.
-Both signup and login retain the selected unified forest-green canvas and a
-slightly lighter embedded form card. No white split screen or Apple button.
-
-References inspected:
-- https://github.com/ : concise positioning and signup CTA, capabilities below.
-- https://github.com/signup : distinct registration destination.
-- https://github.com/login : distinct return-user destination.
-- https://www.tryprofound.com/ : typography, hierarchy and deliberate whitespace.
-Own colors and artwork; no GitHub mascots, copied artwork or implied affiliation.
+Latest user direction:
+The supplied GitHub homepage is a reference for a clean, minimal public entry.
+Remove the community-introduction paragraph, capabilities panel and arches photo.
+Keep the brand navigation, a centered headline, signup and discovery entry points.
+Do not show a member post or introduce the site's capabilities on this page.
 
 Homepage:
-Headline: 和同行一起 / 研究增长.
-A brief introduction followed by one horizontal community panel: native
-expandable capability descriptions on the left, actual category navigation on
-the forest-green right. Mobile stacks these areas. No featured post, invented
-content, member counts or endorsement. Native disclosure controls work with
-keyboard and touch and do not require extra JavaScript. Existing SSR remains.
+Headline: 和同行一起做增长 (two lines on phones).
+Forest-green canvas with a subtle tonal light, restrained typography, generous
+whitespace, a mint signup button and an outlined browse button. No hero image,
+capability accordions, fabricated counts, testimonials or promotional paragraphs.
+SSR and the existing member redirect to discovery remain. No new dependencies.
 
-Original artwork restored after user confirmation (2026-10-12):
-Use public/cover-community.jpg, the existing 900 x 600 image of three pale
-stone arches, a green sphere and natural branch shadows. No new image generation.
-User identified this exact earlier image when asked which print they remembered.
-History: auth used this image from 2026-10-08; e1d5406 on 2026-10-10 15:18
-replaced it with a green process diagram after the GitHub auth redesign request.
-547a72c on 2026-10-11 16:18 removed that diagram during copy simplification.
-The later fern texture and the unshipped growth-line exploration are superseded.
-Rejected growth-line drafts are archived only in ignored outputs/.
+References supplied by the user:
+- GitHub homepage screenshot: centered hierarchy, distinct sign-in/signup links.
+- GitHub signup/login screenshots: authentication is a separate destination.
+Own branding, colors and copy. No GitHub artwork or implied affiliation.
 
 Authentication:
-Keep the approved unified forest-green canvas and lighter embedded form card.
-Place the restored image below the left title and description; remove redundant
-category links there. Phone view keeps a compact image above the form and hides
-the desktop promotional copy. Keep enough image height to show all three arches
-and the green sphere, without the earlier overly tight panoramic crop.
-No image overlay crosses a control. Decorative image has empty alternative text.
-Google/email forms, recovery and invite enforcement are unchanged.
+This revision leaves the existing authentication screens unchanged while the user
+reviews historical designs. The prior arches restoration was rejected as the
+wrong historical version. Do not treat it as the selected long-term direction.
+Google/email, invite enforcement, reset and verification remain unchanged.
 
-Homepage:
-Use the same original image beside the concise community introduction and CTAs.
-On phones, stack copy, actions, image and community capabilities. Published posts
-remain in discovery. No new claims, stats, sample posts or testimonials.
-Images declare dimensions to avoid layout shifts. Existing CSS feedback and
-reduced-motion support remain. No new dependencies or animation libraries.
+Historical auth designs recovered for comparison (not deployed by this change):
+A e1d5406: 2026-10-10 15:18, dark left/white right, process-line illustration.
+B 5960bbc: 2026-10-10 16:07, unified deep green with an inset form card.
+C 06919fd: 2026-10-10 16:16, light sage palette with the same illustration.
+D ed96c71: 2026-10-10 16:21, forest-green palette.
+E 547a72c: 2026-10-11 16:18, removed illustration and descriptive copy.
+F 0a9adb2: 2026-10-12 19:47, fern engraving and paper texture.
+A–E are reconstructed from committed source; F uses its saved screenshot.
+The ignored outputs/auth-history gallery is for selection, not a production page.
 
-Review criteria:
-Desktop 1440; phones 390 and 320. No horizontal overflow, phone inputs 16px,
-primary button visible, signup/login/home and disclosure navigation function.
-Public intro must not display a specific member contribution. Google and email
-flows retain their existing contracts. External identity verification is not
-repeated solely for a visual revision. Production asset verification separately
-recorded in DEPLOYMENT.md. Local proof images live in ignored outputs/.
+Checks:
+Desktop 1440; phone 390 and 320, no horizontal overflow. Signup, sign-in and
+browse links navigate correctly. Existing application regression suite and
+compiled-worker checks pass. External identity verification is not repeated
+solely for a visual revision. Deployment evidence is in DEPLOYMENT.md.

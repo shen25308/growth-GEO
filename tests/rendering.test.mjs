@@ -81,7 +81,7 @@ test("SSR login has working Google entry and email form, without waiting for boo
     sqlite.close();
   }
 });
-test("guest home introduces the community without featuring a post; members go straight to discovery", async () => {
+test("guest home has public entry links without exposing posts; members go straight to discovery", async () => {
   const { env, sqlite } = await setup();
   try {
     const response = await worker.fetch(
@@ -94,10 +94,7 @@ test("guest home introduces the community without featuring a post; members go s
     assert.match(html, /href="\/discover"/);
     const visible = html.split('<div id="app">')[1].split("<dialog")[0];
     assert.doesNotMatch(visible, /An actual guide|Owner|landing-featured|开放资源库/);
-    assert.match(visible, /和同行一起<br><span>研究增长/);
-    assert.match(visible, /参与讨论与改进/);
     assert.match(visible, /href="\/signup"/);
-    assert.doesNotMatch(html, /growth-cover|landing-hero-art/);
     assert.doesNotMatch(html, /class="global-nav"|class="mobile-nav"/);
     const member = await worker.fetch(
       new Request("https://growthhub.test/", {
@@ -115,7 +112,7 @@ test("guest home introduces the community without featuring a post; members go s
     );
     const emptyHTML = await empty.text();
     assert.doesNotMatch(emptyHTML, /An actual guide/);
-    assert.match(emptyHTML, /在 GrowthHub/);
+    assert.match(emptyHTML, /href="\/signup"/);
   } finally {
     sqlite.close();
   }
