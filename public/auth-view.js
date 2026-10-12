@@ -24,7 +24,7 @@ export function authView(ctx, url) {
       verify = mode === "verify",
       ready = state.auth?.ready;
     const title = signup
-      ? "加入 GrowthHub"
+      ? "注册 GrowthHub"
       : recover
         ? "重置你的密码"
         : reset
@@ -47,12 +47,21 @@ export function authView(ctx, url) {
     const switchLink = signup
       ? `<span>已有账户？</span><a href="#login?next=${redirect}">登录 ${icon("chevron-right")}</a>`
       : !recover && !reset && !verify
-        ? `<span>第一次来？</span><a href="#signup?next=${redirect}">创建账户 ${icon("chevron-right")}</a>`
+        ? `<span>还没有账户？</span><a href="#signup?next=${redirect}">创建账户 ${icon("chevron-right")}</a>`
         : `<a href="#login">返回登录 ${icon("chevron-right")}</a>`;
 
     return `<div class="auth-layout auth-v2">
    <header class="auth-topbar">${authBrand()}<div class="auth-switch">${switchLink}</div></header>
-   <aside class="auth-story"><div class="auth-story-copy"><h2 class="auth-story-title">增长方法与<br>实战经验</h2><p>发现和分享增长 Skills、实战心得与开源工具。</p></div><figure class="auth-artwork"><img src="/cover-community.jpg" alt="" width="900" height="600" decoding="async"></figure></aside>
+   <aside class="auth-story">
+    <div class="auth-story-copy"><h2 class="auth-story-title">分享增长经验</h2>
+     <ul class="auth-benefits">
+      <li>${icon("check")}<div><strong>增长 Skills</strong><span>操作步骤和实用工具。</span></div></li>
+      <li>${icon("check")}<div><strong>项目复盘</strong><span>记录投入、过程和结果。</span></div></li>
+      <li>${icon("check")}<div><strong>同行讨论</strong><span>提问、反馈和改进建议。</span></div></li>
+     </ul>
+    </div>
+    <div class="auth-path" aria-hidden="true"><svg class="auth-path-lines" viewBox="0 0 440 164" fill="none"><path d="M40 105H145Q180 105 180 70V56Q180 25 218 25H256Q288 25 288 58V74Q288 105 322 105H400"/><path d="M145 105Q180 105 180 136H315Q350 136 350 105" stroke-dasharray="4 6"/></svg><div class="auth-path-node path-discover">${icon("book")}<span>发现</span></div><div class="auth-path-node path-practice">${icon("check-circle")}<span>实践</span></div><div class="auth-path-node path-share">${icon("git-branch")}<span>分享</span></div></div>
+   </aside>
    <section class="auth-panel" aria-labelledby="auth-heading">
     <div class="auth-form-wrap">
      <h1 id="auth-heading">${title}</h1>${subtitle ? `<p class="auth-subtitle">${subtitle}</p>` : ""}

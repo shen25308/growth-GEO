@@ -13,6 +13,7 @@ export function landingShell(content, icon) {
 
 export function landingContent({ icon }) {
   return `<section class="landing-hero" aria-labelledby="landing-title">
-    <div class="landing-hero-copy"><h1 id="landing-title">和同行一起<span class="landing-title-break"></span>做增长</h1><div class="landing-actions"><a class="landing-button" href="#signup">注册 GrowthHub ${icon("chevron-right")}</a><a class="landing-button landing-button-secondary" href="#explore">浏览社区 ${icon("chevron-right")}</a></div></div>
+    <div class="landing-hero-copy"><h1 id="landing-title"><span class="landing-title-lead">和同行一起</span><span class="landing-title-main">做增长</span></h1><div class="landing-actions"><a class="landing-button" href="#signup">注册 GrowthHub ${icon("chevron-right")}</a><a class="landing-button landing-button-secondary" href="#explore">浏览社区 ${icon("chevron-right")}</a></div></div>
+    <div class="landing-connections" aria-hidden="true"><svg viewBox="0 0 640 210" fill="none"><path d="M50 136H192Q250 136 250 82V70Q250 36 292 36H355Q395 36 395 79V94Q395 136 450 136H590"/><path class="connection-return" d="M185 136Q230 136 230 182H456Q500 182 500 136"/></svg><span class="connection-node connection-book">${icon("book")}</span><span class="connection-node connection-practice">${icon("check-circle")}</span><span class="connection-node connection-fork">${icon("git-branch")}</span></div>
   </section>`;
 }

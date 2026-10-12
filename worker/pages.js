@@ -92,7 +92,7 @@ export async function pageResponse(request, env) {
       trending: "实践榜",
       collections: "话题",
       login: "登录",
-      signup: "加入 GrowthHub",
+      signup: "注册 GrowthHub",
     }[route.route] ||
     "GrowthHub";
   // application/json is inert. Escaping '<' prevents user content closing the script element.
