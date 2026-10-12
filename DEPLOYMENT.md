@@ -6,9 +6,9 @@
 
 截至 2026-10-12：独立站已部署至公司 Cloudflare，14 张业务表迁移及远端恢复核对完成。Dynadot 名称服务器已保存为公司 Cloudflare 分配的地址，注册局 RDAP 已确认；旧 Sites 自定义域名绑定已移除并通过列表为空核实。独立 Worker 已关闭维护模式。用户确认电脑端可打开；已在 Safari 看见正式域名下的真实资源列表。
 
-当前 Worker 版本：`a9683096-7051-4f06-a103-f1b7eec2c4d8`。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
+当前 Worker 版本：`05afa5ab-4c74-4e8d-934e-d80fec2979fb`（SSR / 退出修复 / 新版界面）。上一可回退版本：`a9683096-7051-4f06-a103-f1b7eec2c4d8`。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
 
-新权威解析地址的 HTTPS 检查通过：首页、初始化接口、真实资源详情均返回 200；Skill 下载包 47,390 字节，与仓库文件 SHA-256 一致；未登录账户导出返回 401，源码及环境文件路径返回 404。Google 入口返回 303 至原 Supabase 授权地址，回跳为 `https://growthhub.dev/api/auth/callback`，PKCE cookie 为 Secure / HttpOnly / SameSite=Lax。以上仅证明入口及配置正确，迁移后的真实 Google 授权回跳、邮箱流程、私有写入及手机验收仍待完成。使用电脑现有代理正常访问正式域名的初始化接口也返回 200。直连命令行递归 DNS 仍缓存旧 A 记录；定点检查使用新权威记录且正常验证 TLS，没有关闭证书校验。
+新权威解析地址的 HTTPS 检查通过：首页、初始化接口、真实资源详情均返回 200；Skill 下载包 47,390 字节，与仓库文件 SHA-256 一致；未登录账户导出返回 401，源码及环境文件路径返回 404。Google 入口返回 303 至原 Supabase 授权地址，回跳为 `https://growthhub.dev/api/auth/callback`，PKCE cookie 为 Secure / HttpOnly / SameSite=Lax。用户随后确认电脑访问正常、手机 Google 登录成功。邮箱流程、两账户私有写入与完整业务验收仍待完成。使用电脑现有代理正常访问正式域名的初始化接口也返回 200。直连命令行递归 DNS 仍缓存旧 A 记录；定点检查使用新权威记录且正常验证 TLS，没有关闭证书校验。
 
 旧站冻结版本为 Sites v17，提交 `f810415b33dcabde717777ca44c20f75ea39136a`，环境修订 4（`MIGRATION_READ_ONLY=true`），2026-10-12 00:27（Asia/Shanghai）部署成功。公开读取及已有会话的数据导出仍可用；新增写入和认证请求返回迁移提示。冻结核对报告在 `outputs/growthhub-migration/`。如取消切换，可将该开关改回 `false` 并重新部署同一旧站版本；若新库已接收写入，必须先核对增量。
 
@@ -19,11 +19,11 @@
 - 公司区域已移除导入的旧 A `172.66.3.26`、`162.159.143.30`；现由 `growthhub.dev → growthhub` Worker 绑定生成解析。核验时权威 A 为 `104.21.57.22`、`172.67.140.157`，不要将这些动态地址硬编码为部署配置。
 - 原 Sites 自定义域名 `appgdom_6acb3c91cce88191beada51a6b4e7b38` 已移除；旧网站及数据库保留用于恢复，但禁止写入。
 - 原 Dynadot 无邮箱、其他子域名或 DNSSEC 配置。旧 `_cf-custom-hostname` TXT 暂留待清理，不再存在对应 Sites 域名绑定。
-- 本轮没有变更网站域名或 Supabase 项目，所以 Google / Supabase 登录回跳地址保持不变。真实手机登录验收已交给用户，不能以配置检查代替登录成功。
+- 本轮没有变更网站域名或 Supabase 项目，所以 Google / Supabase 登录回跳地址保持不变。用户已确认真实手机 Google 登录成功。
 
 ## 配置
 
-`wrangler.jsonc` 固定公司账号、Worker 名称、D1 数据库 ID，关闭 workers.dev 与预览网址。仅 `/api/*` 进入 Worker，其他请求由静态资源服务处理。`npm run deploy` 先校验目标，避免误发到公司其他项目。
+`wrangler.jsonc` 固定公司账号、Worker 名称、D1 数据库 ID，关闭 workers.dev 与预览网址。`/api/*` 与明确列出的页面路由进入 Worker；发现页、资源详情、话题、作者和认证页面输出完整 HTML。指纹静态资源直接由 Assets 服务处理。`npm run deploy` 先校验目标，避免误发到公司其他项目。
 
 | 配置 | 保存位置 | 用途 |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ npx wrangler d1 migrations apply DB --remote
 npm run deploy
 ```
 
-`npm run build` 生成自包含 Worker，仅用于兼容性回归检查。Cloudflare 实际发布入口是 `worker/index.js` 与 `public/`，不使用 Sites 绑定。
+`npm run build` 生成带内容指纹的 JS/CSS 与 `dist/assets/`，并生成用于回归检查的独立 Worker 包。Cloudflare 实际发布入口是 `worker/index.js` 与 `dist/assets/`，发布前自动构建，不使用 Sites 绑定。`html_handling: none` 保证 Worker 可以读取 HTML 模板而不触发静态地址重定向。
 
 域名切换前必须完成：
 
@@ -77,3 +77,17 @@ npx wrangler d1 export DB --remote --output backups/growthhub.sql
 ## 访问与费用
 
 按用户选择先使用 Cloudflare 免费额度，不自动购买或升级套餐。免费限额达到后可能出现请求失败；关注 Workers 请求量和 D1 读写/存储指标。迁移后的入口不指向北京 ECS，不影响 Natively 现有服务器业务。
+
+## 2026-10-12 交互与渲染更新
+
+- 退出成功后清空身份、弹窗、个人详情和请求缓存；中断旧请求，以会话版本阻止迟到响应恢复个人界面。跨标签退出事件与浏览器历史快照恢复也会重新核对身份。
+- 页面首个响应包含真实内容和安全转义的初始化 JSON；页面 HTML 为 `private, no-store`，不对登录态做跨用户共享缓存。Supabase token 不进入页面数据。
+- 新分享链接为 `/resources/:id`；旧 `#repo/:id` 链接仍兼容。旧链接的 fragment 不会发给服务器，首次打开旧链接仍可能需要一次详情请求。
+- 详情在当前会话内保留 60 秒，最多 12 项；页面空闲时预加载前两个可见资源，指针、聚焦或触摸也可触发，最多两个并行预取。省流量或 2G 网络不预取。退出立即清空。
+- 收藏使用即时反馈，一次写入，不再额外读取整份社区；失败回滚。详情标签切换复用一次读取的内容。
+- 一个指纹 CSS 和一个 JS；长期缓存仅用于指纹资源。移除旧入口的多份样式/脚本网络请求。
+- 本地检查：55 项测试、12 项发布产物检查、恢复演练、Cloudflare 构建通过。实际浏览器检查 320、390、1440 像素布局，手机账户退出、标签取消筛选、详情和登录页；未替用户执行新的真实账户注册或内容写入。
+
+自评：页面结构、字号层级、退出一致性和请求数量已改善，主要页面可以在 JavaScript 执行前显示内容。当前只有一份公开资源，列表密度受真实内容数量限制；不以补造内容提升观感。仍需真实多地区网络和多成员使用反馈，不能把本地快速响应等同于所有网络下的速度保证。
+
+发布后核验：正式域名首页、资源详情和登录页均返回 200，HTML 已带真实内容；指纹资产返回一年缓存策略。现有网络经代理单次测得首页约 1.60 秒、详情约 1.02 秒、登录页约 0.84 秒完成响应，仅是本次样本，未代表真实多地区统计。Skill 下载校验和一致，匿名账户导出为 401、环境文件路径为 404。Google 入口继续回跳 growthhub.dev 的原认证回调。

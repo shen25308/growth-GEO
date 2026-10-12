@@ -6,12 +6,41 @@
   "compatibility_date": "2026-10-11",
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [{"pattern":"growthhub.dev","custom_domain":true}],
+  "routes": [
+    {
+      "pattern": "growthhub.dev",
+      "custom_domain": true
+    }
+  ],
   "assets": {
-    "directory": "./public",
+    "directory": "./dist/assets",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"],
-    "not_found_handling": "none"
+    "run_worker_first": [
+      "/api/*",
+      "/",
+      "/resources/*",
+      "/people/*",
+      "/topics",
+      "/trending",
+      "/stars",
+      "/profile",
+      "/journey",
+      "/practice",
+      "/login",
+      "/signup",
+      "/recover",
+      "/reset-password",
+      "/verify",
+      "/onboarding",
+      "/settings",
+      "/drafts",
+      "/inbox",
+      "/admin",
+      "/terms",
+      "/privacy"
+    ],
+    "not_found_handling": "none",
+    "html_handling": "none"
   },
   "vars": {
     "PUBLIC_ORIGIN": "https://growthhub.dev",
@@ -19,10 +48,15 @@
     "AUTH_PROVIDERS": "google",
     "MAINTENANCE": "false"
   },
-  "d1_databases": [{
-    "binding": "DB",
-    "database_name": "growthhub-production",
-    "database_id": "294e8d50-fb49-4696-83a4-95012e624bd9",
-    "migrations_dir": "drizzle"
-  }]
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "growthhub-production",
+      "database_id": "294e8d50-fb49-4696-83a4-95012e624bd9",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "build": {
+    "command": "npm run build"
+  }
 }
