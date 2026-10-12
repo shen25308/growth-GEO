@@ -126,10 +126,31 @@ body[data-page="home"] {
   inset: 0 -10% 0;
   background: radial-gradient(ellipse at 50% 54%, #e0e9d9 0, #f4f6f100 67%);
 }
+.landing-hero-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 64px;
+  max-width: 1160px;
+  margin: 0 auto 64px;
+}
+.landing-artwork {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #c0b9a8;
+}
+.landing-artwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
 .landing-hero-copy {
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto 58px;
+  text-align: left;
+  max-width: 560px;
+  margin: 0;
   animation: landing-enter 0.35s ease-out both;
 }
 .landing-hero h1 {
@@ -151,7 +172,7 @@ body[data-page="home"] {
 }
 .landing-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: 28px;
   margin-top: 30px;
@@ -436,9 +457,13 @@ body[data-page="home"] {
   .landing-hero {
     padding: 40px 22px 0;
   }
-  .landing-hero-copy {
-    margin-bottom: 38px;
+  .landing-hero-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    margin-bottom: 36px;
   }
+  .landing-hero-copy { margin: 0; }
+  .landing-artwork { border-radius: 12px; }
   .landing-hero h1 {
     font-size: clamp(36px, 7.5vw, 52px);
     line-height: 1.25;
@@ -446,7 +471,7 @@ body[data-page="home"] {
   }
   .landing-description {
     max-width: 340px;
-    margin: 20px auto 0;
+    margin: 20px 0 0;
     font-size: 16px;
     line-height: 1.8;
     text-wrap: pretty;

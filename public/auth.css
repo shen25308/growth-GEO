@@ -289,28 +289,49 @@ body:is([data-page=login],[data-page=signup],[data-page=recover],[data-page=rese
   }
 }
 
-/* Original botanical print sits behind the interface; it never covers controls. */
-.auth-v2.auth-layout {
-  position: relative;
-  isolation: isolate;
+/* Restore the original arches and green sphere selected by the user. */
+.auth-v2 .auth-story { gap: 28px; }
+.auth-v2 .auth-story-copy > p { margin-bottom: 0; max-width: 410px; }
+.auth-artwork {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #c0b9a8;
+  box-shadow: 0 20px 48px -28px #06110b80;
 }
-.auth-v2.auth-layout::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 24% 50%, #1a2b22e6 0%, #1a2b22b3 22%, #1a2b2200 65%), url("/auth-botanical-v1.jpg") center / cover no-repeat;
-  opacity: 0.55;
+.auth-v2 .auth-artwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  max-width: 100%;
+  margin: 0;
+  object-fit: cover;
+  object-position: center;
+  mix-blend-mode: normal;
 }
 .auth-v2 .auth-panel {
   border-color: #73816a;
   box-shadow: 0 16px 48px #0c1c1538, inset 0 1px 0 #e6efce0c;
 }
 @media (max-width: 760px) {
-  .auth-v2.auth-layout::before {
-    background-image: linear-gradient(#1a2b221f, #1a2b2200), url("/auth-botanical-mobile-v1.jpg");
-    background-position: 24% bottom;
-    opacity: 0.65;
+  .auth-v2.auth-layout {
+    grid-template-rows: auto auto auto 1fr;
+    gap: 20px;
   }
+  .auth-v2 .auth-story {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    margin: auto;
+  }
+  .auth-v2 .auth-story-copy { display: none; }
+  .auth-artwork { border-radius: 12px; }
+  .auth-v2 .auth-artwork img {
+    height: auto;
+    aspect-ratio: 5 / 3;
+    object-position: center;
+  }
+  .auth-v2 .auth-panel { align-self: start; }
+  .auth-page-footer { align-self: end; }
 }

@@ -22,24 +22,31 @@ the forest-green right. Mobile stacks these areas. No featured post, invented
 content, member counts or endorsement. Native disclosure controls work with
 keyboard and touch and do not require extra JavaScript. Existing SSR remains.
 
+Original artwork restored after user confirmation (2026-10-12):
+Use public/cover-community.jpg, the existing 900 x 600 image of three pale
+stone arches, a green sphere and natural branch shadows. No new image generation.
+User identified this exact earlier image when asked which print they remembered.
+History: auth used this image from 2026-10-08; e1d5406 on 2026-10-10 15:18
+replaced it with a green process diagram after the GitHub auth redesign request.
+547a72c on 2026-10-11 16:18 removed that diagram during copy simplification.
+The later fern texture and the unshipped growth-line exploration are superseded.
+Rejected growth-line drafts are archived only in ignored outputs/.
+
 Authentication:
-Keep approved single-green layout, Google and email form, and invitation note.
-An original low-contrast botanical print adds cotton-paper grain and sage fern
-engraving at the outer edges. A CSS tint suppresses detail behind the left copy;
-the form remains opaque. The print is decorative and does not capture input.
-The background never gates content rendering. No continuous animation or new
-font/library request. Reduced-motion preferences remain respected.
-Desktop image: public/auth-botanical-v1.jpg (1280 px, 137920 bytes).
-Phone image: public/auth-botanical-mobile-v1.jpg (768 px, 54625 bytes).
-Versioned images use one-year immutable caching; page HTML remains private.
+Keep the approved unified forest-green canvas and lighter embedded form card.
+Place the restored image below the left title and description; remove redundant
+category links there. Phone view keeps a compact image above the form and hides
+the desktop promotional copy. Keep enough image height to show all three arches
+and the green sphere, without the earlier overly tight panoramic crop.
+No image overlay crosses a control. Decorative image has empty alternative text.
+Google/email forms, recovery and invite enforcement are unchanged.
 
-Image generation:
-Built-in image_gen tool used; no CLI/API fallback.
-Original retained at /Users/alansun/.codex/generated_images/01a114c5-ff6d-7e80-a6af-884bbe0de992/exec-eed8ee78-94bb-4b05-bfcb-a072e2679d5a.png
-Generated image resized and JPEG-encoded for website delivery.
-
-Final generation prompt:
-Use case: stylized-concept. Asset type: original decorative background texture for GrowthHub's forest-green sign-in and sign-up web pages. Generate a wide 3:2 image, about 1536x1024. Full bleed matte deep forest green #1a2b22 cotton paper with very subtle fine natural paper grain. Two restrained botanical copperplate engravings, monochrome muted sage green: one large gracefully curved fern frond enters from the bottom-left corner and sweeps into the lower third; a smaller frond peeks diagonally in from the upper-right corner. Fine detailed leaf veins and delicate hatchwork, like an exquisite archival botanical print debossed onto green book cloth. Visible but low contrast, elegant and understated, original brand texture not wallpaper repetition. Keep the central 70% mostly empty and dark green so UI text and a form can sit over it. The botanical marks stay at the edges. Flat print, not a photograph or 3D scene. No text, no letters, no logos, no frame, no interface mockup, no glow, no black vignette, no sculpture, no steps, no flowers, no glossy tropical leaves. Surface colors limited to forest green and desaturated warm sage. Refined premium editorial visual, not busy.
+Homepage:
+Use the same original image beside the concise community introduction and CTAs.
+On phones, stack copy, actions, image and community capabilities. Published posts
+remain in discovery. No new claims, stats, sample posts or testimonials.
+Images declare dimensions to avoid layout shifts. Existing CSS feedback and
+reduced-motion support remain. No new dependencies or animation libraries.
 
 Review criteria:
 Desktop 1440; phones 390 and 320. No horizontal overflow, phone inputs 16px,

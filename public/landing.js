@@ -36,7 +36,8 @@ export function landingContent({ icon }) {
     ],
   ];
   return `<section class="landing-hero" aria-labelledby="landing-title">
-    <div class="landing-hero-copy"><h1 id="landing-title">和同行一起<br><span>研究增长</span></h1><p class="landing-description">GrowthHub 是一个围绕增长实践的社区。<br>分享 Skills、复盘项目、交流方法，也参与开源工具的改进。</p><div class="landing-actions"><a class="landing-button" href="#signup">加入 GrowthHub ${icon("chevron-right")}</a><a class="landing-text-link" href="#explore">先逛逛社区 ${icon("chevron-right")}</a></div></div>
+    <div class="landing-hero-top"><div class="landing-hero-copy"><h1 id="landing-title">和同行一起<br><span>研究增长</span></h1><p class="landing-description">GrowthHub 是一个围绕增长实践的社区。<br>分享 Skills、复盘项目、交流方法，也参与开源工具的改进。</p><div class="landing-actions"><a class="landing-button" href="#signup">加入 GrowthHub ${icon("chevron-right")}</a><a class="landing-text-link" href="#explore">先逛逛社区 ${icon("chevron-right")}</a></div></div>
+    <figure class="landing-artwork"><img src="/cover-community.jpg" alt="" width="900" height="600" decoding="async" fetchpriority="high"></figure></div>
     <section class="landing-introduction" aria-labelledby="landing-introduction-title">
       <div class="landing-introduction-bar"><h2 id="landing-introduction-title">在 GrowthHub</h2><a href="#explore">探索社区 ${icon("chevron-right")}</a></div>
       <div class="landing-introduction-body">
