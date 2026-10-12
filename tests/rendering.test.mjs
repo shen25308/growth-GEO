@@ -81,7 +81,7 @@ test("SSR login has working Google entry and email form, without waiting for boo
     sqlite.close();
   }
 });
-test("guest home is an SSR cover with real resources; members go straight to discovery", async () => {
+test("guest home introduces the community without featuring a post; members go straight to discovery", async () => {
   const { env, sqlite } = await setup();
   try {
     const response = await worker.fetch(
@@ -92,9 +92,11 @@ test("guest home is an SSR cover with real resources; members go straight to dis
     assert.equal(response.status, 200);
     assert.match(html, /id="landing-title"/);
     assert.match(html, /href="\/discover"/);
-    assert.match(html, /An actual guide/);
-    assert.match(html, /增长从业者的<br><span>开放资源库/);
-    assert.match(html, /href="\/resources\/guide-id\?tab=discussions"/);
+    const visible = html.split('<div id="app">')[1].split("<dialog")[0];
+    assert.doesNotMatch(visible, /An actual guide|Owner|landing-featured|开放资源库/);
+    assert.match(visible, /和同行一起<br><span>研究增长/);
+    assert.match(visible, /参与讨论与改进/);
+    assert.match(visible, /href="\/signup"/);
     assert.doesNotMatch(html, /growth-cover|landing-hero-art/);
     assert.doesNotMatch(html, /class="global-nav"|class="mobile-nav"/);
     const member = await worker.fetch(
@@ -113,7 +115,7 @@ test("guest home is an SSR cover with real resources; members go straight to dis
     );
     const emptyHTML = await empty.text();
     assert.doesNotMatch(emptyHTML, /An actual guide/);
-    assert.match(emptyHTML, /发布第一份资源/);
+    assert.match(emptyHTML, /在 GrowthHub/);
   } finally {
     sqlite.close();
   }

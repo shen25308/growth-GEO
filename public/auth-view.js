@@ -52,7 +52,7 @@ export function authView(ctx, url) {
 
     return `<div class="auth-layout auth-v2">
    <header class="auth-topbar">${authBrand()}<div class="auth-switch">${switchLink}</div></header>
-   <aside class="auth-story"><div class="auth-story-copy"><h2 class="auth-story-title">增长从业者的<br>开放资源库</h2><p>发现和分享增长 Skills、实战心得与开源工具。</p><nav class="auth-categories" aria-label="浏览资源"><a href="#explore?type=skill">增长方法 ${icon("chevron-right")}</a><a href="#explore?type=experience">实战心得 ${icon("chevron-right")}</a><a href="#explore?type=tool">开源工具 ${icon("chevron-right")}</a></nav></div></aside>
+   <aside class="auth-story"><div class="auth-story-copy"><h2 class="auth-story-title">增长方法与<br>实战经验</h2><p>发现和分享增长 Skills、实战心得与开源工具。</p><nav class="auth-categories" aria-label="浏览资源"><a href="#explore?type=skill">增长方法 ${icon("chevron-right")}</a><a href="#explore?type=experience">实战心得 ${icon("chevron-right")}</a><a href="#explore?type=tool">开源工具 ${icon("chevron-right")}</a></nav></div></aside>
    <section class="auth-panel" aria-labelledby="auth-heading">
     <div class="auth-form-wrap">
      <h1 id="auth-heading">${title}</h1>${subtitle ? `<p class="auth-subtitle">${subtitle}</p>` : ""}

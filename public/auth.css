@@ -288,3 +288,29 @@ body:is([data-page=login],[data-page=signup],[data-page=recover],[data-page=rese
     transition: none !important;
   }
 }
+
+/* Original botanical print sits behind the interface; it never covers controls. */
+.auth-v2.auth-layout {
+  position: relative;
+  isolation: isolate;
+}
+.auth-v2.auth-layout::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 24% 50%, #1a2b22e6 0%, #1a2b22b3 22%, #1a2b2200 65%), url("/auth-botanical-v1.jpg") center / cover no-repeat;
+  opacity: 0.55;
+}
+.auth-v2 .auth-panel {
+  border-color: #73816a;
+  box-shadow: 0 16px 48px #0c1c1538, inset 0 1px 0 #e6efce0c;
+}
+@media (max-width: 760px) {
+  .auth-v2.auth-layout::before {
+    background-image: linear-gradient(#1a2b221f, #1a2b2200), url("/auth-botanical-mobile-v1.jpg");
+    background-position: 24% bottom;
+    opacity: 0.65;
+  }
+}

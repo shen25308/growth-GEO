@@ -1,40 +1,50 @@
-GrowthHub public cover revision | 2026-10-12
+GrowthHub homepage and authentication revision | 2026-10-12
 
-Design read: public resource-community entrance for growth practitioners;
-quiet editorial hierarchy, actual content, native green identity.
-Design variance 5 / motion 3 / density 3.
+Current direction confirmed by the user:
+The homepage has the role of GitHub's public homepage, with GrowthHub's own style.
+It introduces the community and offers entry to discovery, signup and login.
+Specific member posts belong in discovery, not on the public brand homepage.
+Both signup and login retain the selected unified forest-green canvas and a
+slightly lighter embedded form card. No white split screen or Apple button.
 
-References already inspected:
-- Profound https://www.tryprofound.com/ : strong title hierarchy and whitespace.
-- GitHub https://github.com/ : public entry distinct from sign-in and work area.
-- Product Hunt https://www.producthunt.com/ : actual resource and author discovery.
-These references inform hierarchy, not copied artwork or proprietary assets.
+References inspected:
+- https://github.com/ : concise positioning and signup CTA, capabilities below.
+- https://github.com/signup : distinct registration destination.
+- https://github.com/login : distinct return-user destination.
+- https://www.tryprofound.com/ : typography, hierarchy and deliberate whitespace.
+Own colors and artwork; no GitHub mascots, copied artwork or implied affiliation.
 
-Previous concept rejected by the user:
-The generated folded-book sculpture attempted to symbolize knowledge spreading.
-It was an original image, not a Profound reference. Its layered silhouette read as
-clutter, and the slogan copy felt formulaic. Removed both generated JPEGs from
-public assets and removed their cache rules. Original historical work is in Git.
+Homepage:
+Headline: 和同行一起 / 研究增长.
+A brief introduction followed by one horizontal community panel: native
+expandable capability descriptions on the left, actual category navigation on
+the forest-green right. Mobile stacks these areas. No featured post, invented
+content, member counts or endorsement. Native disclosure controls work with
+keyboard and touch and do not require extra JavaScript. Existing SSR remains.
 
-Revised design:
-- Direct headline: 增长从业者的开放资源库.
-- Single factual description: 发现和分享增长 Skills、实战心得与开源工具。
-- Centered typography above a real published resource, fetched in existing SSR.
-- Resource title, description, author, topic, update date are live data.
-- Full resource and discussion links go to actual persistent resource routes.
-- Topic links and View all filter the live community. No made-up counters or posts.
-- Sage page, forest resource-action panel, restrained borders and one soft shadow.
-- Keep the selected forest login canvas/card; align wordmark, typography,
-  green accents, button geometry and explanatory copy with the cover.
-- Entrance uses transform only: content is visible immediately. Hover feedback
-  uses small shifts and shadow changes, no looping animation or JS dependency.
-- Reduced motion disables all entrance and hover transitions.
+Authentication:
+Keep approved single-green layout, Google and email form, and invitation note.
+An original low-contrast botanical print adds cotton-paper grain and sage fern
+engraving at the outer edges. A CSS tint suppresses detail behind the left copy;
+the form remains opaque. The print is decorative and does not capture input.
+The background never gates content rendering. No continuous animation or new
+font/library request. Reduced-motion preferences remain respected.
+Desktop image: public/auth-botanical-v1.jpg (1280 px, 137920 bytes).
+Phone image: public/auth-botanical-mobile-v1.jpg (768 px, 54625 bytes).
+Versioned images use one-year immutable caching; page HTML remains private.
 
-Validation and self-review:
-- Desktop 1440, mobile 390 and 320 reviewed in actual browser.
-- Title > resource title > description > metadata hierarchy is clear.
-- Primary entry visible in the first phone viewport; no horizontal overflow.
-- Discussion route and cover-to-signup navigation verified with real resource.
-- Auth keeps Google and email, no Apple; password fields remain 16px on mobile.
-- Content volume is currently one published resource. Do not fill the layout with
-  fabricated entries. This is a restrained first release, not parity with GitHub.
+Image generation:
+Built-in image_gen tool used; no CLI/API fallback.
+Original retained at /Users/alansun/.codex/generated_images/01a114c5-ff6d-7e80-a6af-884bbe0de992/exec-eed8ee78-94bb-4b05-bfcb-a072e2679d5a.png
+Generated image resized and JPEG-encoded for website delivery.
+
+Final generation prompt:
+Use case: stylized-concept. Asset type: original decorative background texture for GrowthHub's forest-green sign-in and sign-up web pages. Generate a wide 3:2 image, about 1536x1024. Full bleed matte deep forest green #1a2b22 cotton paper with very subtle fine natural paper grain. Two restrained botanical copperplate engravings, monochrome muted sage green: one large gracefully curved fern frond enters from the bottom-left corner and sweeps into the lower third; a smaller frond peeks diagonally in from the upper-right corner. Fine detailed leaf veins and delicate hatchwork, like an exquisite archival botanical print debossed onto green book cloth. Visible but low contrast, elegant and understated, original brand texture not wallpaper repetition. Keep the central 70% mostly empty and dark green so UI text and a form can sit over it. The botanical marks stay at the edges. Flat print, not a photograph or 3D scene. No text, no letters, no logos, no frame, no interface mockup, no glow, no black vignette, no sculpture, no steps, no flowers, no glossy tropical leaves. Surface colors limited to forest green and desaturated warm sage. Refined premium editorial visual, not busy.
+
+Review criteria:
+Desktop 1440; phones 390 and 320. No horizontal overflow, phone inputs 16px,
+primary button visible, signup/login/home and disclosure navigation function.
+Public intro must not display a specific member contribution. Google and email
+flows retain their existing contracts. External identity verification is not
+repeated solely for a visual revision. Production asset verification separately
+recorded in DEPLOYMENT.md. Local proof images live in ignored outputs/.
