@@ -1,4 +1,6 @@
 import { createViews } from "./views.js";
+import { installMotion } from "./motion.js";
+installMotion();
 import {
   routeHash,
   routeURL,

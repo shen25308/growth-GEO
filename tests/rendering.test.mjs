@@ -119,3 +119,34 @@ test("old fragment and clean URLs resolve to the same resource, tab and filters"
   }
   assert.equal(routeURL("#main"), "#main");
 });
+
+test("guide contents link only to real sections and skip headings inside code blocks", async () => {
+  const { env, sqlite } = await setup();
+  try {
+    sqlite
+      .prepare("UPDATE resources SET data=? WHERE id=?")
+      .run(
+        JSON.stringify({
+          ...resource,
+          readme:
+            "# Guide\n## Install\nDo this\n```markdown\n## Not a section\n```\n## Finish\nDone",
+        }),
+        "guide-id",
+      );
+    const response = await worker.fetch(
+      new Request("https://growthhub.test/resources/guide-id"),
+      env,
+    );
+    const html = await response.text();
+    assert.match(html, /data-section="guide-section-0">Install/);
+    assert.match(html, /data-section="guide-section-1">Finish/);
+    assert.match(html, /id="guide-section-1" tabindex="-1">Finish/);
+    assert.doesNotMatch(html, /data-section="guide-section-2"/);
+    const toc = html.match(
+      /<nav class="guide-contents"[^>]*>(.*?)<\/nav>/s,
+    )?.[1];
+    assert.doesNotMatch(toc, /Not a section/);
+  } finally {
+    sqlite.close();
+  }
+});

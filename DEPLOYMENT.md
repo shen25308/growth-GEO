@@ -91,3 +91,16 @@ npx wrangler d1 export DB --remote --output backups/growthhub.sql
 自评：页面结构、字号层级、退出一致性和请求数量已改善，主要页面可以在 JavaScript 执行前显示内容。当前只有一份公开资源，列表密度受真实内容数量限制；不以补造内容提升观感。仍需真实多地区网络和多成员使用反馈，不能把本地快速响应等同于所有网络下的速度保证。
 
 发布后核验：正式域名首页、资源详情和登录页均返回 200，HTML 已带真实内容；指纹资产返回一年缓存策略。现有网络经代理单次测得首页约 1.60 秒、详情约 1.02 秒、登录页约 0.84 秒完成响应，仅是本次样本，未代表真实多地区统计。Skill 下载校验和一致，匿名账户导出为 401、环境文件路径为 404。Google 入口继续回跳 growthhub.dev 的原认证回调。
+
+
+## 2026-10-12 visual and motion update
+
+The community uses GitHub Explore's stable navigation and resource/actions hierarchy, Product Hunt's resource presentation, and DEV's cover-led content reading as references. The installed Notion DESIGN.md was also inspected for card geometry; GrowthHub retains its own green identity and Primer semantic foundations. Reference pages: https://github.com/explore, https://www.producthunt.com/, https://dev.to/.
+
+Discovery now presents real resource metadata in a code-native publication cover with a spine, layered pages, topic icon, and author. Topics use tangible tinted tiles. Detail reuses the same artwork and provides a keyboard-accessible table of contents. No invented resource, author, count, endorsement, or results was added. Existing route and data contracts are unchanged.
+
+Motion includes bounded pointer tilt, expanding cover sheets, 3px card hover lift, short entrance transitions, saved-star feedback, and a floating mobile navigation bar. Pointer handling coalesces events through requestAnimationFrame, disables tilt for touch/coarse pointers and reduced-motion, and resets on exit, preference change, and page hide. Cover float runs three short cycles, not indefinitely. All content is visible before JavaScript; no new external image/font request or animation dependency was introduced.
+
+Browser verification: desktop 1440px; mobile 390px and 320px with no document overflow. Cover hover was observed in the real browser (3px lift and live perspective variables); detail TOC moved focus to the actual heading without changing routes; browser error/warning logs were empty. Tests include pointer batching/reset, reduced-motion and touch behavior, accessible TOC navigation, and headings inside fenced code blocks. Visual review found and fixed entrance animation fill overriding hover transforms. Current content volume remains one published resource; the design does not fill it with fabricated content.
+
+Published Worker version: `8a7ba5b6-c16b-426e-a920-e3ec80b09004`. Post-deploy homepage and the real Skill detail returned 200; both contain the new SSR artwork/TOC and fingerprinted assets. The local preview bar is absent from production. 59 tests and 12 compiled release checks passed; Cloudflare dry run passed. Previous release for rollback: `05afa5ab-4c74-4e8d-934e-d80fec2979fb`.

@@ -39,7 +39,8 @@ export function createViews(ctx) {
   const authorKey = (r) => r.ownerId;
   const repo = (id) => state.resources.find((r) => r.id === id);
   const isOwn = (r) => r?.ownerId === state.user?.id;
-  function markdown(input) {
+  function markdown(input, anchors = false) {
+    let section = 0;
     let code = false,
       lines = [],
       out = [],
@@ -80,7 +81,9 @@ export function createViews(ctx) {
         end();
         if (/^#{1,3} /.test(raw)) {
           const n = raw.indexOf(" ");
-          out.push(`<h${n}>${s.slice(n + 1)}</h${n}>`);
+          out.push(
+            `<h${n}${anchors && n === 2 ? ` id="guide-section-${section++}" tabindex="-1"` : ""}>${s.slice(n + 1)}</h${n}>`,
+          );
         } else if (raw.startsWith("> "))
           out.push("<blockquote>" + s.slice(5) + "</blockquote>");
         else if (raw.trim()) out.push("<p>" + s + "</p>");
@@ -220,8 +223,23 @@ export function createViews(ctx) {
     practiced: "最多实践",
     updated: "最近更新",
   };
+  const topicIcons = {
+    GEO: "globe",
+    SEO: "search",
+    "AI 自动化": "workflow",
+    用户获取: "people",
+    内容增长: "book",
+    产品增长: "goal",
+  };
+  function resourceCover(r, compact = false) {
+    const tone =
+      r.type === "tool" ? "slate" : r.type === "experience" ? "sand" : "forest";
+    // A native, animated publication cover, derived from real resource metadata.
+    // This is artwork, not an imitation screenshot or a claim of measured results.
+    return `<div class="resource-cover cover-${tone} ${compact ? "cover-compact" : ""}" data-tilt aria-hidden="true"><div class="cover-orbit orbit-one"></div><div class="cover-orbit orbit-two"></div><div class="cover-stage"><div class="cover-sheet sheet-back">${icon("file")}</div><div class="cover-sheet sheet-middle">${icon("check-circle")}</div><div class="cover-book"><div class="book-spine"></div><div class="book-face"><span class="book-brand">GrowthHub</span><span class="book-topic">${esc(r.topic || types[r.type])}</span><span class="book-format">${r.type === "skill" ? "SKILL" : r.type === "tool" ? "TOOLKIT" : "FIELD NOTES"}</span><span class="book-symbol">${icon(topicIcons[r.topic] || "book")}</span><span class="book-author">${esc(r.owner)}</span></div></div><span class="cover-token token-one">${icon("workflow")}</span><span class="cover-token token-two">${icon("book")}</span></div><span class="cover-open">${icon("chevron-right")}</span></div>`;
+  }
   function rankingRow(r, index) {
-    return `<li class="ranking-row"><div class="resource-emblem ${r.type}" aria-hidden="true">${icon(r.type === "tool" ? "tools" : r.type === "experience" ? "comment-discussion" : "book")}</div><article class="ranking-body"><div class="ranking-byline"><a href="#author/${encodeURIComponent(authorKey(r))}">${av(r.owner)}${esc(r.owner)}</a><span class="ranking-type">${types[r.type]}</span>${state.route === "trending" ? `<span class="rank-position">#${index + 1}</span>` : ""}</div><h2><a href="${href(r.id)}">${esc(r.title)}</a></h2><p class="ranking-description">${esc(r.desc)}</p>${tags(r)}<div class="ranking-meta"><span>${icon("check-circle")}${levels[r.difficulty] || "无需编程"}</span><span>${icon("git-branch")}v${r.version || 1}</span>${r.practiceCount ? `<span>${icon("graph")}${r.practiceCount} 份实践</span>` : ""}<span>更新于 ${date(r.updatedAt)}</span></div></article><div class="ranking-actions">${starButton(r)}</div></li>`;
+    return `<li class="ranking-row ${index === 0 ? "ranking-lead" : ""}"><a class="resource-cover-link" href="${href(r.id)}" aria-label="查看 ${esc(r.title)}">${resourceCover(r, index > 0)}</a><article class="ranking-body"><div class="ranking-byline"><a href="#author/${encodeURIComponent(authorKey(r))}">${av(r.owner)}${esc(r.owner)}</a><span class="ranking-type">${types[r.type]}</span>${state.route === "trending" ? `<span class="rank-position">#${index + 1}</span>` : ""}</div><h2><a href="${href(r.id)}">${esc(r.title)}</a></h2><p class="ranking-description">${esc(r.desc)}</p>${tags(r)}<div class="ranking-meta"><span>${icon("check-circle")}${levels[r.difficulty] || "无需编程"}</span><span>${icon("git-branch")}v${r.version || 1}</span>${r.practiceCount ? `<span>${icon("graph")}${r.practiceCount} 份实践</span>` : ""}<span>${date(r.updatedAt)} 更新</span></div></article><div class="ranking-actions"><a class="resource-read" href="${href(r.id)}">查看资源 ${icon("chevron-right")}</a>${starButton(r)}</div></li>`;
   }
   function discoveryContext() {
     const published = state.resources.filter(
@@ -230,15 +248,9 @@ export function createViews(ctx) {
     const maintainers = [
       ...new Map(published.map((r) => [r.ownerId, r])).values(),
     ].slice(0, 5);
-    const activeTopics = topics
-      .map((t) => ({
-        name: t,
-        count: published.filter((r) => r.topic === t || r.tags.includes(t))
-          .length,
-      }))
-      .filter((t) => t.count);
-    return `<aside class="discovery-context"><section class="context-section"><h2>${icon("hash")}话题</h2>${activeTopics.map((t) => `<button class="context-topic" data-topic="${t.name}" aria-pressed="${state.topic === t.name}"><span>${t.name}</span><span class="counter">${t.count}</span>${icon("chevron-right")}</button>`).join("") || "<p>暂无话题内容</p>"}<a class="context-link" href="#collections">查看全部话题 ${icon("chevron-right")}</a></section><section class="context-section"><h2>${icon("people")}资源维护者</h2>${maintainers.map((r) => `<a class="context-person" href="#author/${encodeURIComponent(r.ownerId)}">${av(r.owner)}<span><strong>${esc(r.owner)}</strong><span>${published.filter((item) => item.ownerId === r.ownerId).length} 个资源</span></span>${icon("chevron-right")}</a>`).join("")}</section><section class="context-publish"><span class="context-publish-icon">${icon("repo")}</span><h2>分享你的增长方法</h2><button class="btn full" data-action="publish">${icon("plus")}发布资源</button></section></aside>`;
+    return `<aside class="discovery-context"><section class="context-section context-topics"><h2>探索话题<a href="#collections" aria-label="查看全部话题">${icon("chevron-right")}</a></h2><div class="topic-tiles">${topics.map((t, i) => `<button class="topic-tile topic-tone-${i}" data-topic="${t}" aria-pressed="${state.topic === t}"><span class="topic-tile-icon">${icon(topicIcons[t])}</span><strong>${t}</strong></button>`).join("")}</div></section><section class="context-section context-makers"><h2>资源维护者</h2>${maintainers.map((r) => `<a class="context-person" href="#author/${encodeURIComponent(r.ownerId)}">${av(r.owner)}<span><strong>${esc(r.owner)}</strong><span>${published.filter((item) => item.ownerId === r.ownerId).length} 个公开资源</span></span>${icon("chevron-right")}</a>`).join("") || '<p class="muted">暂无公开资源</p>'}</section><section class="context-publish"><div class="publish-art" aria-hidden="true"><span>${icon("book")}</span><span>${icon("plus")}</span></div><h2>把你的方法，<br>变成下一个好资源。</h2><button class="btn full" data-action="publish">发布资源 ${icon("chevron-right")}</button></section></aside>`;
   }
+
   function renderDiscovery() {
     const list = filtered(),
       hasFilter = !!(state.q || state.topic !== "all" || state.level !== "all");
@@ -247,7 +259,7 @@ export function createViews(ctx) {
     );
     const title = state.route === "trending" ? "实践榜" : "发现";
 
-    return `<div class="explore-layout discovery-layout">${sidebar()}<div class="explore-content"><header class="discovery-heading"><div><h1>${title}</h1><span class="ranking-total">${list.length} 个${state.type === "all" ? "资源" : types[state.type] || "资源"}</span></div><a href="#collections" class="browse-topics">浏览话题 ${icon("chevron-right")}</a></header><nav class="mobile-categories" aria-label="资源类型">${[["all", "全部"], ...Object.entries(types)].map(([key, label]) => `<button data-filter-type="${key}" aria-pressed="${state.type === key}">${label}</button>`).join("")}</nav><section class="ranking-feed" aria-label="增长资源排行榜"><div class="ranking-toolbar"><div class="ranking-tabs" aria-label="排行榜排序">${Object.entries(
+    return `<div class="explore-layout discovery-layout">${sidebar()}<div class="explore-content"><header class="discovery-heading"><div><h1>${title}</h1><span class="ranking-total">${list.length} 个${state.type === "all" ? "资源" : types[state.type] || "资源"}</span></div></header><nav class="mobile-categories" aria-label="资源类型">${[["all", "全部"], ...Object.entries(types)].map(([key, label]) => `<button data-filter-type="${key}" aria-pressed="${state.type === key}">${label}</button>`).join("")}</nav><section class="ranking-feed" aria-label="增长资源排行榜"><div class="ranking-toolbar"><div class="ranking-tabs" aria-label="排行榜排序">${Object.entries(
       rankingModes,
     )
       .map(
@@ -328,7 +340,19 @@ export function createViews(ctx) {
     const own = isOwn(r),
       summary = repo(r.id) || r;
 
-    return `<div class="repo-page"><div class="repo-header"><a class="back-link" href="${esc(ctx.lastListing || "#explore")}">${icon("chevron-left")}返回资源库</a><div class="repo-title-row"><div class="repo-identity"><div class="repo-byline"><a href="#author/${encodeURIComponent(authorKey(r))}">${av(r.owner)}${esc(r.owner)}</a><span>${types[r.type]} · ${esc(r.topic)}</span></div><h1>${esc(r.title)}</h1><p class="repo-subtitle">${esc(r.desc)}</p></div><div class="repo-actions">${starButton(summary)}<button class="btn btn-sm" data-action="share">${icon("copy")}分享</button><button class="btn btn-sm" data-fork="${esc(r.id)}">${icon("repo-forked")}保存副本<span class="button-count">${summary.forks || 0}</span></button></div></div>${r.forkedFrom ? `<p class="fork-source">派生自 <a href="${href(r.forkedFrom)}">${esc(repo(r.forkedFrom)?.owner || "原作者")} / ${esc(repo(r.forkedFrom)?.name || "原始资源")}</a></p>` : ""}${r.status && r.status !== "published" ? `<div class="notice">${r.status === "hidden" ? "此资源已被管理员隐藏，请查看消息中的处理说明。" : "此资源已下架，仅你和管理员可以查看。"}</div>` : ""}<nav class="repo-nav" aria-label="资源导航">${detailTabs(r)}</nav></div><div class="repo-content"><section class="repo-primary">${state.error ? `<div class="notice error">${esc(state.error)}<button data-action="retry-detail">重新加载</button></div>` : ""}${state.tab === "guide" ? guideView(r, own) : state.tab === "reports" ? reportsView(r) : state.tab === "discussions" ? discussionView(r) : state.tab === "proposals" ? proposalView(r) : historyView(r)}</section><aside class="repo-about">${practiceCallout(r)}<h2>关于</h2><p>${esc(r.desc)}</p>${tags(r)}<div class="about-facts"><span>${icon("book")}${types[r.type]}</span><span>${icon("check-circle")}${levels[r.difficulty] || "无需编程"}</span><span>${icon("star")}${summary.stars || 0} 次收藏</span><span>${icon("repo-forked")}${summary.forks || 0} 份副本</span><span>${icon("graph")}v${r.version} · ${date(r.updatedAt)}</span>${r.url ? `<a target="_blank" rel="noopener" href="${esc(r.url)}">${icon("link-external")}资源链接</a>` : ""}</div><section><h3>维护者</h3><a class="contributor" href="#author/${encodeURIComponent(authorKey(r))}">${av(r.owner)}<div><strong>${esc(r.owner)}</strong><span>资源作者</span></div></a></section><section><h3>协作</h3><button class="btn full" data-action="propose">${icon("git-branch")}提出改进</button></section><section class="resource-management">${own && r.status !== "hidden" ? `<button class="btn full" data-resource-status="${r.status === "archived" ? "published" : "archived"}">${r.status === "archived" ? "重新发布资源" : "下架资源"}</button>` : ""}<button class="text-link" data-action="report">举报此资源</button></section></aside></div></div>`;
+    return `<div class="repo-page"><div class="repo-header"><a class="back-link" href="${esc(ctx.lastListing || "#explore")}">${icon("chevron-left")}返回资源库</a><div class="repo-title-row"><div class="repo-art">${resourceCover(r, true)}</div><div class="repo-identity"><div class="repo-byline"><a href="#author/${encodeURIComponent(authorKey(r))}">${av(r.owner)}${esc(r.owner)}</a><span>${types[r.type]} · ${esc(r.topic)}</span></div><h1>${esc(r.title)}</h1><p class="repo-subtitle">${esc(r.desc)}</p></div><div class="repo-actions">${starButton(summary)}<button class="btn btn-sm" data-action="share">${icon("copy")}分享</button><button class="btn btn-sm" data-fork="${esc(r.id)}">${icon("repo-forked")}保存副本<span class="button-count">${summary.forks || 0}</span></button></div></div>${r.forkedFrom ? `<p class="fork-source">派生自 <a href="${href(r.forkedFrom)}">${esc(repo(r.forkedFrom)?.owner || "原作者")} / ${esc(repo(r.forkedFrom)?.name || "原始资源")}</a></p>` : ""}${r.status && r.status !== "published" ? `<div class="notice">${r.status === "hidden" ? "此资源已被管理员隐藏，请查看消息中的处理说明。" : "此资源已下架，仅你和管理员可以查看。"}</div>` : ""}<nav class="repo-nav" aria-label="资源导航">${detailTabs(r)}</nav></div><div class="repo-content"><section class="repo-primary">${state.error ? `<div class="notice error">${esc(state.error)}<button data-action="retry-detail">重新加载</button></div>` : ""}${state.tab === "guide" ? guideView(r, own) : state.tab === "reports" ? reportsView(r) : state.tab === "discussions" ? discussionView(r) : state.tab === "proposals" ? proposalView(r) : historyView(r)}</section><aside class="repo-about">${guideContents(r)}${practiceCallout(r)}<h2>资源信息</h2>${tags(r)}<div class="about-facts"><span>${icon("book")}${types[r.type]}</span><span>${icon("check-circle")}${levels[r.difficulty] || "无需编程"}</span><span>${icon("star")}${summary.stars || 0} 次收藏</span><span>${icon("repo-forked")}${summary.forks || 0} 份副本</span><span>${icon("graph")}v${r.version} · ${date(r.updatedAt)}</span>${r.url ? `<a target="_blank" rel="noopener" href="${esc(r.url)}">${icon("link-external")}资源链接</a>` : ""}</div><section><h3>维护者</h3><a class="contributor" href="#author/${encodeURIComponent(authorKey(r))}">${av(r.owner)}<div><strong>${esc(r.owner)}</strong><span>资源作者</span></div></a></section><section><h3>协作</h3><button class="btn full" data-action="propose">${icon("git-branch")}提出改进</button></section><section class="resource-management">${own && r.status !== "hidden" ? `<button class="btn full" data-resource-status="${r.status === "archived" ? "published" : "archived"}">${r.status === "archived" ? "重新发布资源" : "下架资源"}</button>` : ""}<button class="text-link" data-action="report">举报此资源</button></section></aside></div></div>`;
+  }
+  function guideContents(r) {
+    if (state.tab !== "guide") return "";
+    let inCode = false;
+    const headings = String(r.readme || "")
+      .split("\n")
+      .filter((line) => {
+        if (line.startsWith("```")) inCode = !inCode;
+        return !inCode && /^## /.test(line);
+      });
+    if (!headings.length) return "";
+    return `<nav class="guide-contents" aria-label="本页目录"><h2>本页目录</h2>${headings.map((line, index) => `<button data-section="guide-section-${index}">${esc(line.slice(3))}</button>`).join("")}</nav>`;
   }
   function guideView(r, own) {
     return `<div class="resource-toolbar"><span class="version-pill">${icon("git-branch")}v${r.version}<span>当前版本</span></span><div>${own ? '<button class="btn" data-action="edit">' + icon("file-code") + "编辑资源</button>" : ""}<button class="btn primary" data-practice="${r.id}">${icon("check-circle")}${state.practices.some((p) => p.resource_id === r.id) ? "继续实践" : "开始实践"}</button><button class="btn" data-action="download">${icon("download")}下载指南</button>${r.url ? `<a class="btn" href="${esc(r.url)}" target="_blank" rel="noopener">${icon("link-external")}${/\.zip$/i.test(r.url) ? "下载 Skill" : "打开资源"}</a>` : ""}</div></div>${practiceInline(r)}<div class="file-browser"><div class="last-change">${av(r.owner)}<strong>${esc(r.owner)}</strong><span>${esc(state.detail?.revisions?.[0]?.message || "发布资源")}</span><time>${date(r.updatedAt)}</time></div>${[
@@ -341,7 +365,7 @@ export function createViews(ctx) {
       )
       .join(
         "",
-      )}</div><article class="readme-panel"><div class="readme-top">${icon("book")}使用指南<span></span><button class="icon-btn" data-action="download" aria-label="下载使用指南">${icon("download")}</button>${own ? `<button class="icon-btn" data-action="edit" aria-label="编辑使用指南">${icon("file-code")}</button>` : ""}</div><div class="readme-content">${evidencePanel(r)}<div class="markdown">${markdown(r.readme.replace(/^# [^\n]+\n/, ""))}</div></div></article>`;
+      )}</div><article class="readme-panel"><div class="readme-top">${icon("book")}使用指南<span></span><button class="icon-btn" data-action="download" aria-label="下载使用指南">${icon("download")}</button>${own ? `<button class="icon-btn" data-action="edit" aria-label="编辑使用指南">${icon("file-code")}</button>` : ""}</div><div class="readme-content">${evidencePanel(r)}<div class="markdown">${markdown(r.readme.replace(/^# [^\n]+\n/, ""), true)}</div></div></article>`;
   }
   function discussionView(r) {
     const a = state.detail?.discussions || [];
