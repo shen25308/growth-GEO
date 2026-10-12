@@ -1,0 +1,55 @@
+GrowthHub public entry and authentication | 2026-10-12
+
+Latest user direction:
+The supplied GitHub homepage is a reference for a clean, minimal public entry.
+Remove the community-introduction paragraph, capabilities panel and arches photo.
+Keep the brand navigation, a centered headline, signup and discovery entry points.
+Do not show a member post or introduce the site's capabilities on this page.
+
+Homepage:
+Headline: 和同行一起 / 做增长 (two levels on desktop and phone).
+Deep-green canvas, a smaller lead line and larger mint main line. Reduce the
+empty space and add the selected B process-line motif below the entry buttons,
+without labels or additional explanation. Mint signup and outlined browse CTA.
+No photographic hero image,
+capability accordions, fabricated counts, testimonials or promotional paragraphs.
+SSR and the existing member redirect to discovery remain. No new dependencies.
+
+References supplied by the user:
+- GitHub homepage screenshot: centered hierarchy, distinct sign-in/signup links.
+- GitHub signup/login screenshots: authentication is a separate destination.
+Own branding, colors and copy. No GitHub artwork or implied affiliation.
+
+Authentication:
+The user selected historical B (5960bbc). Restore its #0d1713 canvas, #18271f
+inset card, #112018 inputs, and book / check / branch process-line illustration.
+Keep the current functional auth forms rather than restoring obsolete code.
+Remove the arches, marketing kicker and aspirational copy. Heading:
+分享增长经验. Three concise entries: 增长 Skills / 项目复盘 / 同行讨论.
+Form titles: 注册 GrowthHub / 登录 GrowthHub. On phones, hide the story and
+illustration to show the functional form immediately. Inputs are 16px minimum.
+Google/email, invite enforcement, reset and verification remain unchanged.
+
+Design read:
+Preserve the selected brand and B composition for growth practitioners, with
+clean hierarchy and direct everyday copy. Existing native CSS and Primer tokens;
+GitHub screenshots guide hierarchy, not an identical design-system clone.
+DESIGN_VARIANCE 4 / MOTION_INTENSITY 3 / VISUAL_DENSITY 3.
+Home uses restrained hover shifts, with reduced-motion support. No added scripts,
+fonts, images or packages. Existing routes, fields, data and auth are preserved.
+
+Historical auth references (B selected for the current implementation):
+A e1d5406: 2026-10-10 15:18, dark left/white right, process-line illustration.
+B 5960bbc: 2026-10-10 16:07, unified deep green with an inset form card.
+C 06919fd: 2026-10-10 16:16, light sage palette with the same illustration.
+D ed96c71: 2026-10-10 16:21, forest-green palette.
+E 547a72c: 2026-10-11 16:18, removed illustration and descriptive copy.
+F 0a9adb2: 2026-10-12 19:47, fern engraving and paper texture.
+A–E are reconstructed from committed source; F uses its saved screenshot.
+The ignored outputs/auth-history gallery is for selection, not a production page.
+
+Checks:
+Desktop 1440; phone 390 and 320, no horizontal overflow. Signup, sign-in and
+browse links navigate correctly. Existing application regression suite and
+compiled-worker checks pass. External identity verification is not repeated
+solely for a visual revision. Deployment evidence is in DEPLOYMENT.md.

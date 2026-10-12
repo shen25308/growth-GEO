@@ -1,24 +1,124 @@
-import fs from 'node:fs/promises';
-for(const name of ['index.html','app.js','styles.css','icons.js','THIRD-PARTY-LICENSE.txt'])await fs.rm('dist/'+name,{force:true});
-const assets={};
-const contentTypes={html:'text/html; charset=utf-8',css:'text/css; charset=utf-8',js:'text/javascript; charset=utf-8',jpg:'image/jpeg',png:'image/png',webp:'image/webp',woff2:'font/woff2'};
-for(const name of await fs.readdir('public')){
-  if(name.startsWith('.'))continue;
-  const ext=name.split('.').pop(),binary=['jpg','png','webp','woff2'].includes(ext);
-  assets['/'+name]={body:await fs.readFile('public/'+name,binary?'base64':'utf8'),binary,type:contentTypes[ext]||'text/plain; charset=utf-8'};
-}
-const data=(await fs.readFile('public/data.js','utf8')).replaceAll('export ','');
-const api=(await fs.readFile('worker/api.js','utf8')).replace(/^import .*\n/gm,'').replaceAll('export async function','async function');
-const auth=(await fs.readFile('worker/auth.js','utf8')).replaceAll('export async function','async function').replaceAll('export function','function');
-const handler=`\nconst assets=${JSON.stringify(assets)};\nexport default {async fetch(request,env){const url=new URL(request.url);if(url.pathname.startsWith('/api/'))return api(request,env);if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});const a=assets[url.pathname==='/'?'/index.html':url.pathname];if(!a)return new Response('Not found',{status:404});return new Response(request.method==='HEAD'?null:a.binary?Uint8Array.from(atob(a.body),c=>c.charCodeAt(0)):a.body,{headers:{'content-type':a.type,'x-content-type-options':'nosniff','referrer-policy':'strict-origin-when-cross-origin','cache-control':'no-cache','content-security-policy':\"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'\"}})}};`;
-await fs.mkdir('dist/server',{recursive:true});await fs.mkdir('dist/.openai',{recursive:true});await fs.writeFile('dist/server/index.js',data+'\n'+auth+'\n'+api+handler);
-try{
- await fs.copyFile('.openai/hosting.json','dist/.openai/hosting.json');
-}catch(error){
- if(error.code!=='ENOENT')throw error;
- // A source checkout can build and run checks without access to a hosted Site.
- // Remove a previous binding so an unbound build cannot target a stale Site.
- await fs.rm('dist/.openai/hosting.json',{force:true});
- console.log('No Site binding: built for local verification only. See DEPLOYMENT.md.');
-}
-console.log('GrowthHub Worker built');
+import fs from "node:fs/promises";
+import { build } from "esbuild";
+import { createHash } from "node:crypto";
+
+await fs.rm("dist/assets", { recursive: true, force: true });
+await fs.mkdir("dist/assets/assets", { recursive: true });
+await build({
+  entryPoints: ["public/app.js"],
+  bundle: true,
+  minify: true,
+  format: "esm",
+  target: ["safari16", "chrome110", "firefox115"],
+  outdir: "dist/assets/assets",
+  entryNames: "[name]-[hash]",
+  metafile: true,
+}).then(async (result) => {
+  const script = Object.keys(result.metafile.outputs)
+    .find((path) => path.endsWith(".js"))
+    .replace("dist/assets", "");
+  const theme = await fs.readFile(
+    "node_modules/@primer/primitives/dist/css/functional/themes/light.css",
+    "utf8",
+  );
+  const tokenNames = [
+    "fgColor-default",
+    "fgColor-muted",
+    "bgColor-muted",
+    "bgColor-default",
+    "borderColor-default",
+    "fgColor-accent",
+  ];
+  const usedTheme =
+    ":root{" +
+    tokenNames
+      .map((name) => {
+        const match = theme.match(new RegExp("--" + name + ":\\s*([^;]+);"));
+        if (!match) throw Error("Missing Primer token: " + name);
+        return "--" + name + ":" + match[1] + ";";
+      })
+      .join("") +
+    "}";
+  const css = (
+    await Promise.all(
+      [
+        "styles.css",
+        "community.css",
+        "product.css",
+        "auth.css",
+        "landing.css",
+      ].map((file) => fs.readFile("public/" + file, "utf8")),
+    )
+  ).join("\n");
+  const resultCSS = await build({
+    stdin: {
+      contents: usedTheme + "\n" + css,
+      loader: "css",
+      resolveDir: process.cwd() + "/public",
+    },
+    minify: true,
+    write: false,
+  });
+  const bytes = resultCSS.outputFiles[0].contents;
+  const stylesheet =
+    "/assets/product-" +
+    createHash("sha256").update(bytes).digest("hex").slice(0, 12) +
+    ".css";
+  await fs.writeFile("dist/assets" + stylesheet, bytes);
+  let html = await fs.readFile("public/index.html", "utf8");
+  html = html
+    .replace(/<link rel="stylesheet"[^>]+>/g, "")
+    .replace("</head>", `<link rel="stylesheet" href="${stylesheet}"></head>`)
+    .replace("/app.js", script);
+  await fs.writeFile("dist/assets/index.html", html);
+  console.log(`Browser assets: ${script}, ${stylesheet}`);
+});
+for (const name of await fs.readdir("public"))
+  if (/\.(zip|txt|jpg)$/.test(name))
+    await fs.copyFile("public/" + name, "dist/assets/" + name);
+await fs.writeFile(
+  "dist/assets/_headers",
+  `${(await fs.readFile("public/_headers", "utf8")).replace(/  Cache-Control: no-cache\n/g, "")}\n/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n`,
+);
+// Portable release artifact runs the same entrypoint as Cloudflare, with a static asset binding.
+const assets = {};
+for (const folder of ["", "assets/"])
+  for (const name of await fs.readdir("dist/assets/" + folder)) {
+    const file = folder + name;
+    if (name === "assets" || name === "_headers") continue;
+    const binary = /\.(zip|jpg)$/.test(name);
+    const type = name.endsWith(".html")
+      ? "text/html; charset=utf-8"
+      : name.endsWith(".js")
+        ? "text/javascript"
+        : name.endsWith(".css")
+          ? "text/css"
+          : name.endsWith(".jpg")
+            ? "image/jpeg"
+            : binary
+              ? "application/zip"
+              : "text/plain";
+    assets["/" + file] = {
+      body: await fs.readFile(
+        "dist/assets/" + file,
+        binary ? "base64" : "utf8",
+      ),
+      binary,
+      type,
+    };
+  }
+const entry = `import worker from './worker/index.js';\nconst assets=${JSON.stringify(assets)};\nexport default {fetch(request,env){return worker.fetch(request,{PUBLIC_ORIGIN:new URL(request.url).origin,...env,ASSETS:{async fetch(request){const a=assets[new URL(request.url).pathname];if(!a)return new Response('Not found',{status:404});if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});return new Response(request.method==='HEAD'?null:a.binary?Uint8Array.from(atob(a.body),c=>c.charCodeAt(0)):a.body,{headers:{'content-type':a.type,'x-content-type-options':'nosniff','cache-control':new URL(request.url).pathname.startsWith('/assets/')?'public, max-age=31536000, immutable':'no-cache'}})}}})}};`;
+await fs.mkdir("dist/server", { recursive: true });
+await build({
+  stdin: {
+    contents: entry,
+    resolveDir: process.cwd(),
+    sourcefile: "release-entry.js",
+  },
+  bundle: true,
+  format: "esm",
+  platform: "browser",
+  target: "es2022",
+  outfile: "dist/server/index.js",
+});
+console.log("Built server-rendered GrowthHub and fingerprinted static assets.");

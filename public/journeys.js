@@ -1,6 +1,0 @@
-export const journeys=[
- {id:'ai-visibility',title:'让品牌被 AI 找到',topic:'GEO',icon:'globe',intro:'先建立可见度基线，再做一轮小范围内容实验。',effort:'第一步约 30 分钟',first:'选 10 个客户真实会问的问题，记录 AI 回答中有没有你的品牌。',steps:[['geo-playbook','建立基线','记录问题、日期、回答和引用来源。'],['seo-content-engine','补齐一篇内容','围绕一个未被回答好的问题，完善事实与来源。'],['experiment-tracker','对照并复盘','用同一组问题复测，说明模型变化等干扰因素。']]},
- {id:'first-users',title:'找到第一批用户',topic:'用户获取',icon:'people',intro:'从一类具体人群开始，观察真实回应而非曝光数字。',effort:'第一步约 45 分钟',first:'写出一类目标用户，以及他们最近一次遇到的具体问题。',steps:[['cold-start-1000','缩小目标人群','列出 10 位可能遇到同一问题的人，先做理解与访谈。'],['newsletter-zero-one','表达一个价值','写出一份样稿或邀请，观察有意义的回复。'],['experiment-tracker','记录有效反馈','记录接触人数、回复、需求和下一步，不只记浏览量。']]},
- {id:'content-system',title:'提高内容产出效率',topic:'内容增长',icon:'book',intro:'先把一篇内容做好，再检查它是否值得复用。',effort:'第一步约 30 分钟',first:'从已有内容中选一篇收到真实问题或咨询的文章。',steps:[['content-repurpose','选出值得复用的内容','保留核心观点，按不同渠道的使用场景改写。'],['seo-content-engine','整理发布检查项','确认读者问题、事实来源与下一步行动。'],['newsletter-zero-one','收集实际反馈','记录节省的时间及有效回复，保留无效的尝试。']]},
- {id:'activation',title:'改善激活与留存',topic:'产品增长',icon:'graph',intro:'先找到用户卡住的一步，再验证一次小改动。',effort:'第一步约 45 分钟',first:'画出从注册到首次获得价值的 3–5 个步骤，标出最大的流失点。',steps:[['activation-checklist','找到首次价值','结合行为与访谈，写出可观察的激活行为。'],['retention-playbook','设计一次价值回访','选择一类用户和一个具体触发条件。'],['experiment-tracker','检查结果与代价','同时记录目标指标、样本和负面反馈。']]}
-];

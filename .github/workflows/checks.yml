@@ -20,3 +20,4 @@ jobs:
       - run: npm ci
       - run: npm run check:release
       - run: npm run check:recovery
+      - run: npm run check:cloudflare
