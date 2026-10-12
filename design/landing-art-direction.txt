@@ -1,20 +1,40 @@
-GrowthHub pre-login cover | 2026-10-12
+GrowthHub public cover revision | 2026-10-12
 
-References inspected:
-- Profound: https://www.tryprofound.com/ (native-browser visual review)
-- GitHub: https://github.com/ (public brand entrance vs community navigation)
-- Product Hunt: https://www.producthunt.com/ (public discovery and concrete resource previews)
+Design read: public resource-community entrance for growth practitioners;
+quiet editorial hierarchy, actual content, native green identity.
+Design variance 5 / motion 3 / density 3.
 
-Direction: spacious sage brand entrance, two-line Chinese headline, original material-led hero image; public discovery stays one click away. Existing forest-green identity is retained. Only real published community content is shown beneath the cover. No borrowed brand marks or third-party visual assets.
-Design dials: variance 7 / motion 5 / density 3. One brand theme, inherited from the user's prior explicit green/lightness preferences.
+References already inspected:
+- Profound https://www.tryprofound.com/ : strong title hierarchy and whitespace.
+- GitHub https://github.com/ : public entry distinct from sign-in and work area.
+- Product Hunt https://www.producthunt.com/ : actual resource and author discovery.
+These references inform hierarchy, not copied artwork or proprietary assets.
 
-Original hero image generated with the built-in image_gen tool, then encoded as JPEG at desktop and mobile resolutions. Generated source stays in the tool output folder; project assets are public/growth-cover-v1.jpg and public/growth-cover-mobile-v1.jpg.
+Previous concept rejected by the user:
+The generated folded-book sculpture attempted to symbolize knowledge spreading.
+It was an original image, not a Profound reference. Its layered silhouette read as
+clutter, and the slogan copy felt formulaic. Removed both generated JPEGs from
+public assets and removed their cache rules. Original historical work is in Git.
 
-Final generation prompt:
-Use case: stylized-concept. Asset type: original website brand hero artwork for GrowthHub, a premium community of growth practitioners sharing skills and knowledge. Produce a highly art-directed photorealistic 3D sculpture, square composition, no UI and absolutely no text, letters, numbers, symbols, charts or logos. Subject: a monumental open ascending spiral constructed from about 18 precisely spaced curved fins of polished translucent jade glass and satin silver aluminum, the fins turning and rising together like pages of an open book into a wing. It is one coherent architectural sculptural object, airy and elegant, deeply dimensional and tactile, detailed sharp edges, green refraction inside glass, alternating delicate opaque chrome edges. Low three-quarter camera, slightly isometric. Entire sculpture fits with 12 percent margin, occupies 76 percent of square. Set on a seamless pale desaturated eucalyptus grey-green studio floor and background, approximate #e4ebe3, with long soft architectural shadows toward bottom-left, strong window light from top right, luminous but controlled. Sophisticated luxury industrial design photograph, restrained museum exhibit, exceptional material realism, a feeling of collective progress and ideas opening. Forest-green and pale mint with neutral silver only. No purple, blue, rainbow, neon, glowing particles, gradients behind the object, floating interface cards, plants, people, candles, text, decorative annotations, arrows or watermark. This is an image asset only, never a screenshot of a website.
+Revised design:
+- Direct headline: 增长从业者的开放资源库.
+- Single factual description: 发现和分享增长 Skills、实战心得与开源工具。
+- Centered typography above a real published resource, fetched in existing SSR.
+- Resource title, description, author, topic, update date are live data.
+- Full resource and discussion links go to actual persistent resource routes.
+- Topic links and View all filter the live community. No made-up counters or posts.
+- Sage page, forest resource-action panel, restrained borders and one soft shadow.
+- Keep the selected forest login canvas/card; align wordmark, typography,
+  green accents, button geometry and explanatory copy with the cover.
+- Entrance uses transform only: content is visible immediately. Hover feedback
+  uses small shifts and shadow changes, no looping animation or JS dependency.
+- Reduced motion disables all entrance and hover transitions.
 
-Interactions: bounded pointer parallax on the artwork, short entrance movement, hover feedback on actions. All motion respects reduced-motion; pointer tracking is disabled on touch. No scroll hijacking or new animation dependency.
-
-Routing: guests see the cover at /; /discover is always publicly browsable; authenticated requests to / redirect to /discover. Legacy #explore and root query filters remain compatible. Login/Google callback contract unchanged.
-
-QA: 1440px desktop, 390px and 320px mobile rendered in browser; first-screen CTAs and overflow checked; cover → discovery → cover → login, topic link, pointer movement verified. 62 Node tests, 12 compiled release checks, Cloudflare dry run passed. No Lighthouse score claimed; browser performance auditing is not exposed in the permitted browser interface.
+Validation and self-review:
+- Desktop 1440, mobile 390 and 320 reviewed in actual browser.
+- Title > resource title > description > metadata hierarchy is clear.
+- Primary entry visible in the first phone viewport; no horizontal overflow.
+- Discussion route and cover-to-signup navigation verified with real resource.
+- Auth keeps Google and email, no Apple; password fields remain 16px on mobile.
+- Content volume is currently one published resource. Do not fill the layout with
+  fabricated entries. This is a restrained first release, not parity with GitHub.

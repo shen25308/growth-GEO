@@ -87,7 +87,7 @@ export async function pageResponse(request, env) {
   const title =
     model.detail?.resource?.title ||
     {
-      home: "增长，从分享开始",
+      home: "增长从业者的开放资源库",
       explore: "发现",
       trending: "实践榜",
       collections: "话题",

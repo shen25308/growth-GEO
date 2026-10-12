@@ -93,7 +93,9 @@ test("guest home is an SSR cover with real resources; members go straight to dis
     assert.match(html, /id="landing-title"/);
     assert.match(html, /href="\/discover"/);
     assert.match(html, /An actual guide/);
-    assert.match(html, /fetchpriority="high"/);
+    assert.match(html, /增长从业者的<br><span>开放资源库/);
+    assert.match(html, /href="\/resources\/guide-id\?tab=discussions"/);
+    assert.doesNotMatch(html, /growth-cover|landing-hero-art/);
     assert.doesNotMatch(html, /class="global-nav"|class="mobile-nav"/);
     const member = await worker.fetch(
       new Request("https://growthhub.test/", {

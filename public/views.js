@@ -94,7 +94,7 @@ export function createViews(ctx) {
     return out.join("");
   }
   function renderLanding() {
-    return landingContent(state, { esc, icon, href, resourceCover, types });
+    return landingContent(state, { esc, icon, href, types, date });
   }
   function renderShell(content = "") {
     if (state.route === "home" && !state.user)
