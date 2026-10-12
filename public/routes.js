@@ -1,5 +1,6 @@
 const paths = {
-  explore: "/",
+  home: "/",
+  explore: "/discover",
   repo: "/resources",
   author: "/people",
   collections: "/topics",
@@ -47,10 +48,16 @@ export function isPagePath(path) {
 export function routeHash(location = globalThis.location) {
   if (location.hash?.startsWith("#") && location.hash !== "#main")
     return location.hash;
+  // Existing shared discovery filters at /?topic=… remain valid.
+  if (
+    location.pathname === "/" &&
+    /[?&](q|type|topic|level|sort)=/.test(location.search || "")
+  )
+    return "#explore" + location.search;
   const [first, ...rest] = location.pathname.slice(1).split("/");
   const name =
     Object.entries(paths).find(([, path]) => path === "/" + first)?.[0] ||
-    "explore";
+    "home";
   return (
     "#" +
     name +

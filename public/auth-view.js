@@ -11,7 +11,7 @@ export function authView(ctx, url) {
   const policies = () =>
     `<label class="accept-policy"><input name="accepted" type="checkbox" required><span>我已阅读并同意 <a href="#terms">社区约定</a> 和 <a href="#privacy">隐私说明</a></span></label>`;
   const authBrand = () =>
-    `<a class="auth-brand" href="#explore" aria-label="GrowthHub 首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><strong>GrowthHub</strong></a>`;
+    `<a class="auth-brand" href="#home" aria-label="GrowthHub 首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><strong>GrowthHub</strong></a>`;
   const googleMark =
     '<svg class="google-mark" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.5-.1-2.9-.4-4.3H24v8.1h11a9.4 9.4 0 0 1-4.1 6.2v5.2h6.7c3.9-3.6 6-8.8 6-15.2Z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.7-5.2c-1.8 1.2-4.1 1.9-6.8 1.9-5.3 0-9.7-3.6-11.3-8.4H5.8v5.3A20.4 20.4 0 0 0 24 44Z"/><path fill="#FBBC05" d="M12.7 27.4a12.2 12.2 0 0 1 0-7.8v-5.3H5.8a20 20 0 0 0 0 18.4l6.9-5.3Z"/><path fill="#EA4335" d="M24 11.2c3 0 5.6 1 7.7 3l5.8-5.8A19.4 19.4 0 0 0 24 4 20.4 20.4 0 0 0 5.8 15.3l6.9 5.3C14.3 15.8 18.7 11.2 24 11.2Z"/></svg>';
   const passwordField = (id, label, isNew) =>

@@ -22,6 +22,15 @@ export async function pageResponse(request, env) {
       route.route === "repo" ? route.id : null,
     );
     cookies = data.cookies;
+    if (route.route === "home" && data.bootstrap.user) {
+      const headers = new Headers({
+        location: "/discover",
+        "cache-control": "private, no-store",
+        vary: "Cookie",
+      });
+      for (const cookie of cookies) headers.append("set-cookie", cookie);
+      return new Response(null, { status: 303, headers });
+    }
     model = {
       ...data.bootstrap,
       ...route,
@@ -46,6 +55,7 @@ export async function pageResponse(request, env) {
   let main = "";
   if (!model.ready)
     main = view.empty("暂时无法连接", model.error, "retry", "重试");
+  else if (route.route === "home") main = view.renderLanding();
   else if (["explore", "trending"].includes(route.route))
     main = view.renderDiscovery();
   else if (route.route === "repo") main = view.renderRepo();
@@ -62,6 +72,7 @@ export async function pageResponse(request, env) {
       '<div class="page-loading" role="status" aria-label="正在加载页面"><div class="loading-skeleton skeleton-heading"></div><div class="loading-skeleton skeleton-row"></div></div>';
   model.serverRendered =
     [
+      "home",
       "explore",
       "trending",
       "repo",
@@ -76,6 +87,7 @@ export async function pageResponse(request, env) {
   const title =
     model.detail?.resource?.title ||
     {
+      home: "增长，从分享开始",
       explore: "发现",
       trending: "实践榜",
       collections: "话题",

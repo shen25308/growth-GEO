@@ -6,7 +6,7 @@
 
 截至 2026-10-12：独立站已部署至公司 Cloudflare，14 张业务表迁移及远端恢复核对完成。Dynadot 名称服务器已保存为公司 Cloudflare 分配的地址，注册局 RDAP 已确认；旧 Sites 自定义域名绑定已移除并通过列表为空核实。独立 Worker 已关闭维护模式。用户确认电脑端可打开；已在 Safari 看见正式域名下的真实资源列表。
 
-当前 Worker 版本：`05afa5ab-4c74-4e8d-934e-d80fec2979fb`（SSR / 退出修复 / 新版界面）。上一可回退版本：`a9683096-7051-4f06-a103-f1b7eec2c4d8`。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
+当前 Worker 版本：`ca9a9600-e9c1-496f-9c32-9c03da7e24b9`（登录前品牌封面）。上一可回退版本：`8a7ba5b6-c16b-426e-a920-e3ec80b09004`（资源封面与交互动效）。已验证迁移快照 SHA-256：`b34cdc1a9a6e6bf2b6456b753c14fc4e93092722f6df9a4ff482d296686770d3`。私有快照及 SQL 保存在工作区 `outputs/growthhub-migration/verified/`，不提交仓库。
 
 新权威解析地址的 HTTPS 检查通过：首页、初始化接口、真实资源详情均返回 200；Skill 下载包 47,390 字节，与仓库文件 SHA-256 一致；未登录账户导出返回 401，源码及环境文件路径返回 404。Google 入口返回 303 至原 Supabase 授权地址，回跳为 `https://growthhub.dev/api/auth/callback`，PKCE cookie 为 Secure / HttpOnly / SameSite=Lax。用户随后确认电脑访问正常、手机 Google 登录成功。邮箱流程、两账户私有写入与完整业务验收仍待完成。使用电脑现有代理正常访问正式域名的初始化接口也返回 200。直连命令行递归 DNS 仍缓存旧 A 记录；定点检查使用新权威记录且正常验证 TLS，没有关闭证书校验。
 
@@ -104,3 +104,11 @@ Motion includes bounded pointer tilt, expanding cover sheets, 3px card hover lif
 Browser verification: desktop 1440px; mobile 390px and 320px with no document overflow. Cover hover was observed in the real browser (3px lift and live perspective variables); detail TOC moved focus to the actual heading without changing routes; browser error/warning logs were empty. Tests include pointer batching/reset, reduced-motion and touch behavior, accessible TOC navigation, and headings inside fenced code blocks. Visual review found and fixed entrance animation fill overriding hover transforms. Current content volume remains one published resource; the design does not fill it with fabricated content.
 
 Published Worker version: `8a7ba5b6-c16b-426e-a920-e3ec80b09004`. Post-deploy homepage and the real Skill detail returned 200; both contain the new SSR artwork/TOC and fingerprinted assets. The local preview bar is absent from production. 59 tests and 12 compiled release checks passed; Cloudflare dry run passed. Previous release for rollback: `05afa5ab-4c74-4e8d-934e-d80fec2979fb`.
+
+## 登录前封面（2026-10-12）
+
+访客访问 `/` 获取服务端直出的品牌封面；已登录用户访问 `/` 返回私有、不可缓存的 303 至 `/discover`。发现页保持免登录浏览。旧 `#explore`、`/?topic=…` 筛选以及全部资源 ID 链接保持兼容。
+
+参考 Profound 的视觉留白与 GitHub、Product Hunt 的公共社区入口，使用原创绿色雕塑主视觉，下方仅展示已发布的真实资源。主视觉移动版约 104 KB、桌面版约 327 KB，带尺寸、优先加载和版本化缓存；减弱动态设置关闭入场与视差动效。生成说明和最终提示词保存在 `design/landing-art-direction.txt`。
+
+验收：62 项 Node 测试、12 项编译产物检查及 Cloudflare dry-run 通过；桌面 1440、手机 390/320 无横向溢出，手机主按钮首屏可见，验证封面到发现/登录及分类跳转。正式 `/`、`/discover` 返回 200，新图片正确返回 image/jpeg 与 immutable 缓存；正式 HTML 已核对新指纹和真实 Skill。未改数据库、账号权限或第三方登录配置。

@@ -46,7 +46,7 @@ async function setup() {
 test("SSR discovery and detail contain real content before any browser JavaScript", async () => {
   const { env, sqlite } = await setup();
   try {
-    for (const path of ["/", "/resources/guide-id"]) {
+    for (const path of ["/discover", "/resources/guide-id"]) {
       const response = await worker.fetch(
         new Request("https://growthhub.test" + path),
         env,
@@ -57,8 +57,9 @@ test("SSR discovery and detail contain real content before any browser JavaScrip
       assert.match(app, /An actual guide/);
       assert.match(app, /href="\/resources\/guide-id/);
       assert.doesNotMatch(app, /正在同步资源内容|loading-skeleton/);
-      if (path !== "/") assert.match(app, /Real instructions &lt;\/script&gt;/);
-      if (path !== "/") assert.match(html, /\\u003c\/script>/);
+      if (path !== "/discover")
+        assert.match(app, /Real instructions &lt;\/script&gt;/);
+      if (path !== "/discover") assert.match(html, /\\u003c\/script>/);
       assert.equal(response.headers.get("cache-control"), "private, no-store");
     }
   } finally {
@@ -79,6 +80,52 @@ test("SSR login has working Google entry and email form, without waiting for boo
   } finally {
     sqlite.close();
   }
+});
+test("guest home is an SSR cover with real resources; members go straight to discovery", async () => {
+  const { env, sqlite } = await setup();
+  try {
+    const response = await worker.fetch(
+      new Request("https://growthhub.test/"),
+      env,
+    );
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(html, /id="landing-title"/);
+    assert.match(html, /href="\/discover"/);
+    assert.match(html, /An actual guide/);
+    assert.match(html, /fetchpriority="high"/);
+    assert.doesNotMatch(html, /class="global-nav"|class="mobile-nav"/);
+    const member = await worker.fetch(
+      new Request("https://growthhub.test/", {
+        headers: { cookie: fixtureCookie("reader") },
+      }),
+      env,
+    );
+    assert.equal(member.status, 303);
+    assert.equal(member.headers.get("location"), "/discover");
+    assert.match(member.headers.get("cache-control"), /private, no-store/);
+    sqlite.prepare("UPDATE resources SET status='hidden'").run();
+    const empty = await worker.fetch(
+      new Request("https://growthhub.test/"),
+      env,
+    );
+    const emptyHTML = await empty.text();
+    assert.doesNotMatch(emptyHTML, /An actual guide/);
+    assert.match(emptyHTML, /发布第一份资源/);
+  } finally {
+    sqlite.close();
+  }
+});
+
+test("legacy root filters keep their discovery intent while the root becomes a cover", () => {
+  assert.equal(routeState(new URL("https://growthhub.test/")).route, "home");
+  const old = routeState(new URL("https://growthhub.test/?topic=GEO&type=all"));
+  const current = routeState(
+    new URL("https://growthhub.test/discover?topic=GEO&type=all"),
+  );
+  assert.deepEqual(old, current);
+  assert.equal(routeURL("#explore"), "/discover");
+  assert.equal(routeURL("#home"), "/");
 });
 test("SSR resource visibility remains enforced and personal data is never shared-cacheable", async () => {
   const { env, sqlite } = await setup();
@@ -123,16 +170,14 @@ test("old fragment and clean URLs resolve to the same resource, tab and filters"
 test("guide contents link only to real sections and skip headings inside code blocks", async () => {
   const { env, sqlite } = await setup();
   try {
-    sqlite
-      .prepare("UPDATE resources SET data=? WHERE id=?")
-      .run(
-        JSON.stringify({
-          ...resource,
-          readme:
-            "# Guide\n## Install\nDo this\n```markdown\n## Not a section\n```\n## Finish\nDone",
-        }),
-        "guide-id",
-      );
+    sqlite.prepare("UPDATE resources SET data=? WHERE id=?").run(
+      JSON.stringify({
+        ...resource,
+        readme:
+          "# Guide\n## Install\nDo this\n```markdown\n## Not a section\n```\n## Finish\nDone",
+      }),
+      "guide-id",
+    );
     const response = await worker.fetch(
       new Request("https://growthhub.test/resources/guide-id"),
       env,

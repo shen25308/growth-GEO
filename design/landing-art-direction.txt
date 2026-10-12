@@ -1,0 +1,20 @@
+GrowthHub pre-login cover | 2026-10-12
+
+References inspected:
+- Profound: https://www.tryprofound.com/ (native-browser visual review)
+- GitHub: https://github.com/ (public brand entrance vs community navigation)
+- Product Hunt: https://www.producthunt.com/ (public discovery and concrete resource previews)
+
+Direction: spacious sage brand entrance, two-line Chinese headline, original material-led hero image; public discovery stays one click away. Existing forest-green identity is retained. Only real published community content is shown beneath the cover. No borrowed brand marks or third-party visual assets.
+Design dials: variance 7 / motion 5 / density 3. One brand theme, inherited from the user's prior explicit green/lightness preferences.
+
+Original hero image generated with the built-in image_gen tool, then encoded as JPEG at desktop and mobile resolutions. Generated source stays in the tool output folder; project assets are public/growth-cover-v1.jpg and public/growth-cover-mobile-v1.jpg.
+
+Final generation prompt:
+Use case: stylized-concept. Asset type: original website brand hero artwork for GrowthHub, a premium community of growth practitioners sharing skills and knowledge. Produce a highly art-directed photorealistic 3D sculpture, square composition, no UI and absolutely no text, letters, numbers, symbols, charts or logos. Subject: a monumental open ascending spiral constructed from about 18 precisely spaced curved fins of polished translucent jade glass and satin silver aluminum, the fins turning and rising together like pages of an open book into a wing. It is one coherent architectural sculptural object, airy and elegant, deeply dimensional and tactile, detailed sharp edges, green refraction inside glass, alternating delicate opaque chrome edges. Low three-quarter camera, slightly isometric. Entire sculpture fits with 12 percent margin, occupies 76 percent of square. Set on a seamless pale desaturated eucalyptus grey-green studio floor and background, approximate #e4ebe3, with long soft architectural shadows toward bottom-left, strong window light from top right, luminous but controlled. Sophisticated luxury industrial design photograph, restrained museum exhibit, exceptional material realism, a feeling of collective progress and ideas opening. Forest-green and pale mint with neutral silver only. No purple, blue, rainbow, neon, glowing particles, gradients behind the object, floating interface cards, plants, people, candles, text, decorative annotations, arrows or watermark. This is an image asset only, never a screenshot of a website.
+
+Interactions: bounded pointer parallax on the artwork, short entrance movement, hover feedback on actions. All motion respects reduced-motion; pointer tracking is disabled on touch. No scroll hijacking or new animation dependency.
+
+Routing: guests see the cover at /; /discover is always publicly browsable; authenticated requests to / redirect to /discover. Legacy #explore and root query filters remain compatible. Login/Google callback contract unchanged.
+
+QA: 1440px desktop, 390px and 320px mobile rendered in browser; first-screen CTAs and overflow checked; cover → discovery → cover → login, topic link, pointer movement verified. 62 Node tests, 12 compiled release checks, Cloudflare dry run passed. No Lighthouse score claimed; browser performance auditing is not exposed in the permitted browser interface.

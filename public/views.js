@@ -1,3 +1,4 @@
+import { landingContent, landingShell } from "./landing.js";
 import { ICONS } from "./icons.js";
 import { cleanLinks } from "./routes.js";
 export function createViews(ctx) {
@@ -92,10 +93,15 @@ export function createViews(ctx) {
     if (code) out.push("<pre><code>" + esc(lines.join("\n")) + "</code></pre>");
     return out.join("");
   }
+  function renderLanding() {
+    return landingContent(state, { esc, icon, href, resourceCover, types });
+  }
   function renderShell(content = "") {
+    if (state.route === "home" && !state.user)
+      return cleanLinks(landingShell(content, icon));
     const r = repo(state.id);
     return cleanLinks(
-      `<header class="global-header"><button class="icon-btn menu-toggle" data-action="menu" aria-label="打开导航" aria-expanded="false">${icon("three-bars")}</button><a href="#explore" class="brand" aria-label="GrowthHub 首页"><span class="brand-mark"><i></i><i></i><i></i></span><strong>GrowthHub</strong></a><label class="global-search">${icon("search")}<input id="search" aria-label="搜索增长资源" placeholder="搜索资源…" value="${esc(state.q)}" maxlength="100"><kbd>/</kbd></label><button class="btn primary header-new" data-action="publish" aria-label="发布资源">${icon("plus")}<span>发布资源</span></button>${state.user ? `<button class="icon-btn header-inbox" data-action="inbox" aria-label="消息通知">${icon("comment-discussion")}</button><button class="avatar-button" data-action="account-menu" aria-label="账户菜单">${av(state.user.name)}</button>` : '<button class="btn header-signin" data-action="login">登录 / 注册</button>'}</header><nav class="global-nav" aria-label="主导航">${[
+      `<header class="global-header"><button class="icon-btn menu-toggle" data-action="menu" aria-label="打开导航" aria-expanded="false">${icon("three-bars")}</button><a href="${state.user ? "#explore" : "#home"}" class="brand" aria-label="GrowthHub 首页"><span class="brand-mark"><i></i><i></i><i></i></span><strong>GrowthHub</strong></a><label class="global-search">${icon("search")}<input id="search" aria-label="搜索增长资源" placeholder="搜索资源…" value="${esc(state.q)}" maxlength="100"><kbd>/</kbd></label><button class="btn primary header-new" data-action="publish" aria-label="发布资源">${icon("plus")}<span>发布资源</span></button>${state.user ? `<button class="icon-btn header-inbox" data-action="inbox" aria-label="消息通知">${icon("comment-discussion")}</button><button class="avatar-button" data-action="account-menu" aria-label="账户菜单">${av(state.user.name)}</button>` : '<button class="btn header-signin" data-action="login">登录 / 注册</button>'}</header><nav class="global-nav" aria-label="主导航">${[
         ["explore", "globe", "发现"],
         ["trending", "flame", "实践榜"],
         ["collections", "bookmark", "话题"],
@@ -478,6 +484,7 @@ export function createViews(ctx) {
     return `<div class="explore-layout">${sidebar()}<div class="explore-content"><div class="page-heading"><div>${personal ? `<div class="profile-heading">${av(name, "large")}<div><h1>${esc(title)}</h1><p>${state.route === "profile" ? esc(state.user?.bio || "") : ""}</p></div></div>` : `<h1>${title}</h1><p>${state.route === "stars" ? "" : state.route === "trending" ? "按已分享的实践记录数排序。记录包含成功与失败，不代表效果保证。" : ""}</p>`}</div>${state.route === "profile" ? '<a class="btn" href="#drafts">云端草稿</a><a class="btn" href="#settings">账户设置</a>' : ""}</div><div class="content-columns"><section class="resource-feed"><div class="feed-title"><h2>${personal ? "资源" : state.route === "stars" ? "已收藏" : "探索资源"}<span class="counter">${list.length}</span></h2>${state.route === "profile" ? '<button class="btn primary btn-sm" data-action="publish">新建资源</button>' : '<span class="muted"></span>'}</div>${filterBar()}${state.q || state.topic !== "all" || state.level !== "all" ? `<div class="filter-summary"><span>${state.q ? "“" + esc(state.q) + "” · " : ""}${state.topic !== "all" ? esc(state.topic) + " · " : ""}${list.length} 个结果</span><button data-action="clear-filters">${icon("x")}清除筛选</button></div>` : ""}<div class="resource-list">${list.length ? list.map(resourceRow).join("") : empty(state.route === "stars" ? "暂无收藏" : personal ? "暂无资源" : "没有找到匹配资源", state.q || state.type !== "all" || state.topic !== "all" || state.level !== "all" ? "试试其他关键词，或清除筛选条件。" : "分享一个方法、一次复盘，或保存一份值得实践的资源。", personal ? "publish" : "reset", personal ? "发布资源" : "浏览全部资源")}</div><div class="list-end">${list.length ? "已展示 " + list.length + " 个资源" : ""}</div></section></div>${state.route === "profile" ? `<a class="practice-profile-link" href="#practice">${icon("check-circle")}我的实践 · ${state.practices.length} 项，继续记录结果 ${icon("chevron-right")}</a>` : ""}</div></div>`;
   }
   return {
+    renderLanding,
     renderListing,
     icon,
     esc,

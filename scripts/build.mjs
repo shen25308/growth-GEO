@@ -41,9 +41,13 @@ await build({
     "}";
   const css = (
     await Promise.all(
-      ["styles.css", "community.css", "product.css", "auth.css"].map((file) =>
-        fs.readFile("public/" + file, "utf8"),
-      ),
+      [
+        "styles.css",
+        "community.css",
+        "product.css",
+        "auth.css",
+        "landing.css",
+      ].map((file) => fs.readFile("public/" + file, "utf8")),
     )
   ).join("\n");
   const resultCSS = await build({
@@ -70,7 +74,7 @@ await build({
   console.log(`Browser assets: ${script}, ${stylesheet}`);
 });
 for (const name of await fs.readdir("public"))
-  if (/\.(zip|txt)$/.test(name))
+  if (/\.(zip|txt|jpg)$/.test(name))
     await fs.copyFile("public/" + name, "dist/assets/" + name);
 await fs.writeFile(
   "dist/assets/_headers",
@@ -82,16 +86,18 @@ for (const folder of ["", "assets/"])
   for (const name of await fs.readdir("dist/assets/" + folder)) {
     const file = folder + name;
     if (name === "assets" || name === "_headers") continue;
-    const binary = /\.zip$/.test(name);
+    const binary = /\.(zip|jpg)$/.test(name);
     const type = name.endsWith(".html")
       ? "text/html; charset=utf-8"
       : name.endsWith(".js")
         ? "text/javascript"
         : name.endsWith(".css")
           ? "text/css"
-          : binary
-            ? "application/zip"
-            : "text/plain";
+          : name.endsWith(".jpg")
+            ? "image/jpeg"
+            : binary
+              ? "application/zip"
+              : "text/plain";
     assets["/" + file] = {
       body: await fs.readFile(
         "dist/assets/" + file,

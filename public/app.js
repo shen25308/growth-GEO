@@ -227,6 +227,10 @@ async function route() {
   if ($("#modal").open) closeModal();
   const previous = state.id;
   Object.assign(state, routeState(location), { error: null, loading: false });
+  if (state.route === "home" && state.user) {
+    history.replaceState(null, "", "/discover");
+    Object.assign(state, routeState(location));
+  }
   if (location.hash && location.hash !== "#main")
     history.replaceState(null, "", routeURL(routeHash()));
   const cached = detailCache.get(state.id);
@@ -337,9 +341,12 @@ function syncShell() {
       state.route === "repo" ? repo(state.id)?.owner || "资源" : "探索";
   if (state.route !== "repo")
     document.title =
-      ({ explore: "发现", trending: "实践榜", collections: "话题" }[
-        state.route
-      ] || "GrowthHub") + " · GrowthHub";
+      ({
+        home: "增长，从分享开始",
+        explore: "发现",
+        trending: "实践榜",
+        collections: "话题",
+      }[state.route] || "GrowthHub") + " · GrowthHub";
 }
 function renderMain() {
   if (!$("#main")) return;
@@ -351,6 +358,10 @@ function renderMain() {
     return;
   }
   if (community.render()) return;
+  if (state.route === "home") {
+    $("#main").innerHTML = cleanLinks(views.renderLanding());
+    return;
+  }
   if (state.route === "repo") {
     renderRepo();
     return;

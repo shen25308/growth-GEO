@@ -44,7 +44,7 @@ const user = {
 };
 const tick = () => new Promise((r) => setTimeout(r, 15));
 async function app(options = {}) {
-  const window = new Window({ url: "https://growthhub.test/" });
+  const window = new Window({ url: "https://growthhub.test/discover" });
   const model = {
     resources: [{ ...resource }],
     stars: [],
@@ -115,7 +115,7 @@ test("logout closes and empties account dialog, removes identity, and returns to
       null,
     );
     assert.ok(a.window.document.querySelector('[data-action="login"]'));
-    assert.equal(a.window.location.pathname, "/");
+    assert.equal(a.window.location.pathname, "/discover");
     assert.ok(a.window.document.querySelector(".ranking-list"));
     assert.deepEqual(
       a.calls.map((c) => c.path),
@@ -135,6 +135,24 @@ test("logout remains correct when localStorage is unavailable", async () => {
     await a.click('[data-action="logout"]');
     assert.equal(a.window.document.querySelector("#modal").open, false);
     assert.ok(a.window.document.querySelector('[data-action="login"]'));
+  } finally {
+    await a.close();
+  }
+});
+test("guest can move between cover, discovery and login without stale navigation", async () => {
+  const a = await app({ guest: true });
+  try {
+    await a.click('.brand[href="/"]');
+    assert.ok(a.window.document.querySelector(".landing-hero"));
+    assert.equal(a.window.document.querySelector(".global-nav"), null);
+    await a.click('.landing-actions a[href="/discover"]');
+    assert.ok(a.window.document.querySelector(".ranking-list"));
+    assert.equal(a.window.document.querySelector(".landing-header"), null);
+    await a.click('.brand[href="/"]');
+    await a.click('.landing-account a[href="/login"]');
+    assert.ok(a.window.document.querySelector("#auth-form"));
+    assert.equal(a.window.document.querySelector(".landing-hero"), null);
+    assert.equal(a.window.document.querySelector("#modal").open, false);
   } finally {
     await a.close();
   }
